@@ -1,5 +1,6 @@
 import { Env } from "./types";
 import { STYLES, VALID_STYLE_IDS } from "./styles";
+import { runPipeline, PipelineError } from "./pipeline";
 
 function jsonResponse(body: object, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -51,7 +52,17 @@ export default {
       );
     }
 
-    // Pipeline will go here
-    return jsonResponse({ message: "Validation passed", prompt, styleId });
+    const style = STYLES[styleId];
+
+    try {
+      const result = await runPipeline(env, prompt.trim(), style);
+      return jsonResponse(result);
+    } catch (err) {
+      if (err instanceof PipelineError) {
+        return errorResponse("Pipeline failed", err.statusCode, err.step, err.message);
+      }
+      const message = err instanceof Error ? err.message : "Unknown error";
+      return errorResponse("Pipeline failed", 500, "unknown", message);
+    }
   },
 } satisfies ExportedHandler<Env>;
