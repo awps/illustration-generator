@@ -71,12 +71,12 @@ export async function runPipeline(
   }
 
   // Step 5: Background removal via Cloudflare Images segment transform
+  // Using /cdn-cgi/image/ URL format because cf.image options in fetch()
+  // don't apply transforms when called from within a Worker
   let transparentPng: ArrayBuffer;
   try {
-    const rawUrl = buildPublicUrl(env, rawKey);
-    const segmentResponse = await fetch(rawUrl, {
-      cf: { image: { segment: "foreground" } },
-    } as RequestInit);
+    const segmentUrl = `https://${env.IMAGES_DOMAIN}/cdn-cgi/image/segment=foreground/${rawKey}`;
+    const segmentResponse = await fetch(segmentUrl);
 
     if (!segmentResponse.ok) {
       throw new Error(`${segmentResponse.status} ${segmentResponse.statusText}`);
