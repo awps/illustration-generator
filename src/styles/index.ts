@@ -29,6 +29,11 @@ export const STYLES: Record<string, Style> = {
     rules:
       "Dark scene with vibrant neon glowing edges. Cyberpunk-inspired. Objects emit colored light. High contrast. Electric blues, magentas, teals. Cinematic feel.",
   },
+  "editorial-cartoon": {
+    name: "Editorial Cartoon",
+    rules:
+      "Flat vector editorial illustration style. A simplified cartoon character (person) as the central figure interacting with the subject matter. Bold dark outlines on all elements. Flat color fills with no gradients. Limited palette of 4-5 saturated colors (purples, oranges, teals). UI screens, browser windows, or relevant objects float behind or around the character. Simple friendly facial features (dot eyes, simple expressions). Slightly rounded proportions. Clean vector shapes. SaaS blog tutorial illustration aesthetic.",
+  },
   "isometric-flat": {
     name: "Isometric Flat",
     rules:
