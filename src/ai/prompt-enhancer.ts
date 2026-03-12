@@ -28,7 +28,7 @@ export async function enhancePrompt(
 
   // response.text is a string getter in @google/genai SDK
   const text = response.text;
-  if (!text || typeof text !== "string") {
+  if (!text) {
     throw new Error("Prompt enhancement returned empty response");
   }
 

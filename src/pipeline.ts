@@ -9,10 +9,12 @@ import { generateId, buildPublicUrl, uploadToR2 } from "./storage/r2";
 export class PipelineError extends Error {
   constructor(
     message: string,
+    public readonly detail: string,
     public readonly step: string,
     public readonly statusCode: number
   ) {
     super(message);
+    this.name = "PipelineError";
   }
 }
 
@@ -46,7 +48,7 @@ export async function runPipeline(
     enhancedPrompt = await enhancePrompt(ai, userPrompt, style);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError(`Prompt enhancement failed: ${msg}`, "enhance-prompt", 502);
+    throw new PipelineError("Prompt enhancement failed", msg, "enhance-prompt", 502);
   }
 
   // Step 3: Generate image
@@ -57,7 +59,7 @@ export async function runPipeline(
   } catch (err) {
     if (err instanceof PipelineError) throw err;
     const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError(`Image generation failed: ${msg}`, "generate-image", 502);
+    throw new PipelineError("Image generation failed", msg, "generate-image", 502);
   }
 
   // Step 4: Upload raw image to R2
@@ -65,7 +67,7 @@ export async function runPipeline(
     await uploadToR2(env, rawKey, rawBytes, "image/png");
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError(`Raw image upload failed: ${msg}`, "upload-raw", 500);
+    throw new PipelineError("Raw image upload failed", msg, "upload-raw", 500);
   }
 
   // Step 5: Background removal via Cloudflare Images segment transform
@@ -84,7 +86,7 @@ export async function runPipeline(
   } catch (err) {
     if (err instanceof PipelineError) throw err;
     const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError(`Background removal failed: ${msg}`, "remove-background", 502);
+    throw new PipelineError("Background removal failed", msg, "remove-background", 502);
   }
 
   // Step 6: Upload transparent image to R2
@@ -92,7 +94,7 @@ export async function runPipeline(
     await uploadToR2(env, transparentKey, transparentPng, "image/png");
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError(`Transparent image upload failed: ${msg}`, "upload-transparent", 500);
+    throw new PipelineError("Transparent image upload failed", msg, "upload-transparent", 500);
   }
 
   return {

@@ -59,7 +59,7 @@ export default {
       return jsonResponse(result);
     } catch (err) {
       if (err instanceof PipelineError) {
-        return errorResponse("Pipeline failed", err.statusCode, err.step, err.message);
+        return errorResponse(err.message, err.statusCode, err.step, err.detail);
       }
       const message = err instanceof Error ? err.message : "Unknown error";
       return errorResponse("Pipeline failed", 500, "unknown", message);
