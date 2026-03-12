@@ -14,6 +14,9 @@ export async function generateImage(
     contents: enhancedPrompt,
     config: {
       responseModalities: ["IMAGE"],
+      imageConfig: {
+        aspectRatio: "1:1",
+      },
     },
   });
 
