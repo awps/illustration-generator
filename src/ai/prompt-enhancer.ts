@@ -5,7 +5,7 @@ const SYSTEM_INSTRUCTION = `You are an expert image prompt engineer. Given a sho
 generate a detailed 3-4 sentence prompt for an AI image generator. The prompt must:
 1. Faithfully represent the user's subject
 2. Strictly follow the provided visual style rules
-3. Always end with: "The subject is rendered on a solid light gray (#E0E0E0) background with no floor, no shadows on the background, and no environmental elements. The subject is cleanly isolated."
+3. Always end with: "The subject is rendered on a solid bright green (#00FF00) chroma key background with no floor, no shadows on the background, and no environmental elements. The subject is cleanly isolated. The bright green color must ONLY appear as the background, never within the subject itself."
 4. Do NOT include any text, watermarks, labels, or UI elements in the image description.
 Return ONLY the image generation prompt, nothing else.`;
 
