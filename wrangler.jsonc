@@ -1,0 +1,17 @@
+{
+  "name": "illustrations-generator",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES_BUCKET",
+      "bucket_name": "illustrations-generator"
+    }
+  ],
+  "vars": {
+    "CLOUDFLARE_ACCOUNT_ID": "",
+    "AI_GATEWAY_ID": "",
+    "IMAGES_DOMAIN": "imagen.publingo.com"
+  }
+}

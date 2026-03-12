@@ -1,14 +1,17 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "illustrations-generator",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "private": true,
   "scripts": {
-    "build": "tsc"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  },
   "devDependencies": {
-    "typescript": "^5.5.3"
-  },
-  "private": true
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^5.5.3",
+    "wrangler": "^4.0.0"
+  }
 }
