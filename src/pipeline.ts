@@ -78,7 +78,6 @@ export async function runPipeline(
   parts.push("MANDATORY: The background must be a solid light lavender purple color — no floor, no shadows on the background, and no environmental elements. Do NOT place any floating text, titles, or labels outside of the main subject — all text must stay within UI cards or elements, never on the background.");
   parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details");
 
-
   const prompt = parts.join(" ");
 
   // Step 2: Generate image
@@ -92,7 +91,7 @@ export async function runPipeline(
     throw new PipelineError("Image generation failed", msg, "generate-image", 502);
   }
 
-  // Step 4: Upload raw image to R2
+  // Step 3: Upload raw image to R2
   try {
     await uploadToR2(env, rawKey, rawBytes, "image/png");
   } catch (err) {
@@ -100,7 +99,7 @@ export async function runPipeline(
     throw new PipelineError("Raw image upload failed", msg, "upload-raw", 500);
   }
 
-  // Step 5: Background removal via Cloudflare Images segment transform
+  // Step 4: Background removal via Cloudflare Images segment transform
   // Using /cdn-cgi/image/ URL format because cf.image options in fetch()
   // don't apply transforms when called from within a Worker
   let transparentPng: ArrayBuffer;
@@ -119,7 +118,7 @@ export async function runPipeline(
     throw new PipelineError("Background removal failed", msg, "remove-background", 502);
   }
 
-  // Step 6: Upload transparent image to R2
+  // Step 5: Upload transparent image to R2
   try {
     await uploadToR2(env, transparentKey, transparentPng, "image/png");
   } catch (err) {
