@@ -1,0 +1,176 @@
+{
+  "info": {
+    "name": "Illustrations Generator",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://illustrations-generator.universally.workers.dev"
+    },
+    {
+      "key": "prompt",
+      "value": "WordPress form builder"
+    },
+    {
+      "key": "project",
+      "value": "WordPress plugin for building contact forms"
+    }
+  ],
+  "item": [
+    {
+      "name": "Generate - Product Feature Illustrations",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\", \"cursors\", \"pills\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - UI Preview",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"cursors\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Pop Icons",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"collection\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"blog\"],\n  \"moods\": [\"playful\"],\n  \"complexities\": [\"balanced\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Workflow Process",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"arrows\"],\n  \"compositions\": [\"flow\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"stacked\", \"vertical\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Integration Orbit",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"orbit\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"techy\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\", \"symmetric\"],\n  \"subjects\": [\"integration\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Conceptual",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\", \"cursors\"],\n  \"compositions\": [\"abstract\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Character Flat",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"character\", \"object\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Object Flat",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"object\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Dashboard Showcase",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\", \"infographic\"],\n  \"elements\": [\"browser\", \"cards\", \"pills\", \"tables\"],\n  \"compositions\": [\"showcase\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"asymmetric\", \"layered\"],\n  \"subjects\": [\"analytics\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Feature Flow",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"arrows\", \"badges\"],\n  \"compositions\": [\"flow\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"asymmetric\", \"vertical\"],\n  \"subjects\": [\"editor\"],\n  \"iconStyles\": [\"filled\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Generate - Flat Icon",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"geometric\", \"editorial\", \"lineart\"],\n  \"elements\": [\"icons\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
+        }
+      }
+    }
+  ]
+}
