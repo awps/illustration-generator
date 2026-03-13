@@ -2,12 +2,16 @@ import { GoogleGenAI } from "@google/genai";
 import { Buffer } from "node:buffer";
 import { Env } from "./types";
 import {
-  Palette, PALETTES,
-  Rendering, IllustrationElement, Composition,
-  Mood, Complexity, Layout, Subject, IconStyle, Placement,
-  buildRenderingPrompt, buildElementPrompt, buildCompositionPrompt,
-  buildMoodPrompt, buildComplexityPrompt, buildLayoutPrompt,
-  buildSubjectPrompt, buildIconStylePrompt, buildPlacementPrompt,
+  Palette, PALETTES, buildPrompt,
+  type Rendering, RENDERING_KEYWORDS,
+  type IllustrationElement, ELEMENT_KEYWORDS,
+  type Composition, COMPOSITION_KEYWORDS,
+  type Mood, MOOD_KEYWORDS,
+  type Complexity, COMPLEXITY_KEYWORDS,
+  type Layout, LAYOUT_KEYWORDS,
+  type Subject, SUBJECT_KEYWORDS,
+  type IconStyle, ICON_STYLE_KEYWORDS,
+  type Placement, PLACEMENT_KEYWORDS,
 } from "./styles";
 import { generateImage } from "./ai/image-generator";
 import { generateId, buildPublicUrl, uploadToR2 } from "./storage/r2";
@@ -64,16 +68,16 @@ export async function runPipeline(
 
   const chosen = options.palette ?? PALETTES[Math.floor(Math.random() * PALETTES.length)];
   const parts: string[] = [userPrompt];
-  if (options.renderings?.length) parts.push(buildRenderingPrompt(options.renderings));
-  if (options.elements?.length) parts.push(buildElementPrompt(options.elements));
-  if (options.compositions?.length) parts.push(buildCompositionPrompt(options.compositions));
+  if (options.renderings?.length) parts.push(buildPrompt(options.renderings, RENDERING_KEYWORDS, "Rendering style"));
+  if (options.elements?.length) parts.push(buildPrompt(options.elements, ELEMENT_KEYWORDS, "Visual elements"));
+  if (options.compositions?.length) parts.push(buildPrompt(options.compositions, COMPOSITION_KEYWORDS, "Scene composition"));
   if (options.project) parts.push(`Project context: ${options.project}.`);
-  if (options.subjects?.length) parts.push(buildSubjectPrompt(options.subjects));
-  if (options.placements?.length) parts.push(buildPlacementPrompt(options.placements));
-  if (options.moods?.length) parts.push(buildMoodPrompt(options.moods));
-  if (options.complexities?.length) parts.push(buildComplexityPrompt(options.complexities));
-  if (options.layouts?.length) parts.push(buildLayoutPrompt(options.layouts));
-  if (options.iconStyles?.length) parts.push(buildIconStylePrompt(options.iconStyles));
+  if (options.subjects?.length) parts.push(buildPrompt(options.subjects, SUBJECT_KEYWORDS, "Subject context"));
+  if (options.placements?.length) parts.push(buildPrompt(options.placements, PLACEMENT_KEYWORDS, "Image placement"));
+  if (options.moods?.length) parts.push(buildPrompt(options.moods, MOOD_KEYWORDS, "Illustration mood"));
+  if (options.complexities?.length) parts.push(buildPrompt(options.complexities, COMPLEXITY_KEYWORDS, "Composition complexity"));
+  if (options.layouts?.length) parts.push(buildPrompt(options.layouts, LAYOUT_KEYWORDS, "Layout"));
+  if (options.iconStyles?.length) parts.push(buildPrompt(options.iconStyles, ICON_STYLE_KEYWORDS, "Icon style"));
   parts.push(`Use this color palette as fill/background colors for UI elements, cards, buttons, and icons: ${chosen.join(", ")}. Text inside elements must be relevant labels or grey skeleton placeholder pills — never display color names or color codes as text.`);
   parts.push("MANDATORY: The background must be a solid light lavender purple color — no floor, no shadows on the background, and no environmental elements. Do NOT place any floating text, titles, or labels outside of the main subject — all text must stay within UI cards or elements, never on the background.");
   parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details");

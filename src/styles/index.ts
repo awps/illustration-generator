@@ -3,12 +3,13 @@ export type Palette = string[];
 import palettes from "../palletes/violet.json";
 export const PALETTES: Palette[] = palettes;
 
-export const RENDERINGS = [
-  "flat", "bold", "geometric", "editorial", "lineart", "infographic",
-] as const;
-export type Rendering = (typeof RENDERINGS)[number];
+export function buildPrompt<K extends string>(keys: K[], keywords: Record<K, string>, label: string): string {
+  return `${label}: ${keys.map(k => keywords[k]).join(", ")}.`;
+}
 
-export const RENDERING_KEYWORDS: Record<Rendering, string> = {
+// --- Renderings ---
+
+export const RENDERING_KEYWORDS = {
   flat: "clean flat color fills, no outlines, rounded soft shapes, 2D",
   bold: "bold heavy shapes, strong visual weight, thick prominent forms",
   geometric: "sharp angular shapes, structured mathematical forms",
@@ -16,19 +17,11 @@ export const RENDERING_KEYWORDS: Record<Rendering, string> = {
   lineart: "single-weight line illustration, elegant stroked forms",
   infographic: "information design aesthetic, clear visual hierarchy, diagram-friendly",
 };
+export type Rendering = keyof typeof RENDERING_KEYWORDS;
 
-export function buildRenderingPrompt(renderings: Rendering[]): string {
-  const keywords = renderings.map(r => RENDERING_KEYWORDS[r]).join(", ");
-  return `Rendering style: ${keywords}.`;
-}
+// --- Elements ---
 
-export const ELEMENTS = [
-  "cards", "character", "object", "icons", "browser",
-  "badges", "cursors", "arrows", "pills", "charts", "tables",
-] as const;
-export type IllustrationElement = (typeof ELEMENTS)[number];
-
-export const ELEMENT_KEYWORDS: Record<IllustrationElement, string> = {
+export const ELEMENT_KEYWORDS = {
   cards: "white rounded UI cards/panels with content sections",
   character: "friendly simplified character with minimal features interacting with subject",
   object: "product device as central figure — laptop, phone, tablet, or symbolic object",
@@ -41,18 +34,11 @@ export const ELEMENT_KEYWORDS: Record<IllustrationElement, string> = {
   charts: "data charts, graphs, metric visualizations",
   tables: "data tables with rows, columns, and status indicators",
 };
+export type IllustrationElement = keyof typeof ELEMENT_KEYWORDS;
 
-export function buildElementPrompt(elements: IllustrationElement[]): string {
-  const keywords = elements.map(e => ELEMENT_KEYWORDS[e]).join(", ");
-  return `Visual elements: ${keywords}.`;
-}
+// --- Compositions ---
 
-export const COMPOSITIONS = [
-  "flow", "orbit", "showcase", "abstract", "collection", "diagram", "split",
-] as const;
-export type Composition = (typeof COMPOSITIONS)[number];
-
-export const COMPOSITION_KEYWORDS: Record<Composition, string> = {
+export const COMPOSITION_KEYWORDS = {
   flow: "multi-step sequential process, elements connected in progression order",
   orbit: "central hub element with satellite elements in circular orbit, connector lines",
   showcase: "product demo presentation, overlapping panels at slight offsets",
@@ -61,57 +47,11 @@ export const COMPOSITION_KEYWORDS: Record<Composition, string> = {
   diagram: "explanatory visual with labeled parts and connections",
   split: "side-by-side panels, comparison or input/output view",
 };
+export type Composition = keyof typeof COMPOSITION_KEYWORDS;
 
-export function buildCompositionPrompt(compositions: Composition[]): string {
-  const keywords = compositions.map(c => COMPOSITION_KEYWORDS[c]).join(", ");
-  return `Scene composition: ${keywords}.`;
-}
+// --- Moods ---
 
-export const MOODS = [
-  "professional", "playful", "techy", "friendly",
-  "polished", "corporate", "clean", "authoritative",
-  "energetic", "fun", "lively", "approachable",
-  "technical", "modern", "precise", "warm", "inviting",
-] as const;
-export type Mood = (typeof MOODS)[number];
-
-export const COMPLEXITIES = [
-  "few", "several", "many",
-  "spacious", "balanced", "dense",
-  "simple", "refined", "intricate",
-  "sparse", "informative", "decorated", "bare",
-] as const;
-export type Complexity = (typeof COMPLEXITIES)[number];
-
-export const LAYOUTS = [
-  "centered", "offset", "left", "right",
-  "horizontal", "vertical", "diagonal",
-  "stacked", "grouped", "grid",
-  "symmetric", "asymmetric",
-  "overlapping", "spread", "tight", "layered",
-] as const;
-export type Layout = (typeof LAYOUTS)[number];
-
-export const SUBJECTS = [
-  "dashboard", "form", "email", "analytics", "settings",
-  "integration", "security", "payment", "editor", "chat",
-  "website", "mobile", "wordpress",
-] as const;
-export type Subject = (typeof SUBJECTS)[number];
-
-export const ICON_STYLES = [
-  "outlined", "filled", "minimal", "rounded",
-  "sharp", "thin", "bold", "duotone",
-] as const;
-export type IconStyle = (typeof ICON_STYLES)[number];
-
-export const PLACEMENTS = [
-  "hero", "feature", "section", "blog", "header",
-  "card", "thumbnail", "onboarding", "empty", "state",
-] as const;
-export type Placement = (typeof PLACEMENTS)[number];
-
-export const MOOD_KEYWORDS: Record<Mood, string> = {
+export const MOOD_KEYWORDS = {
   professional: "professional, polished",
   playful: "playful, fun, rounded shapes",
   techy: "technical, developer-oriented aesthetic",
@@ -130,13 +70,11 @@ export const MOOD_KEYWORDS: Record<Mood, string> = {
   warm: "warm, soft shapes, comforting",
   inviting: "inviting, welcoming, draws you in",
 };
+export type Mood = keyof typeof MOOD_KEYWORDS;
 
-export function buildMoodPrompt(moods: Mood[]): string {
-  const keywords = moods.map(m => MOOD_KEYWORDS[m]).join(", ");
-  return `The illustration mood is: ${keywords}.`;
-}
+// --- Complexities ---
 
-export const COMPLEXITY_KEYWORDS: Record<Complexity, string> = {
+export const COMPLEXITY_KEYWORDS = {
   few: "only 1-2 key elements",
   several: "3-4 elements",
   many: "5+ elements",
@@ -151,13 +89,11 @@ export const COMPLEXITY_KEYWORDS: Record<Complexity, string> = {
   decorated: "accent shapes, ornamental touches",
   bare: "absolute essentials only, nothing extra",
 };
+export type Complexity = keyof typeof COMPLEXITY_KEYWORDS;
 
-export function buildComplexityPrompt(complexities: Complexity[]): string {
-  const keywords = complexities.map(c => COMPLEXITY_KEYWORDS[c]).join(", ");
-  return `Composition complexity: ${keywords}.`;
-}
+// --- Layouts ---
 
-export const LAYOUT_KEYWORDS: Record<Layout, string> = {
+export const LAYOUT_KEYWORDS = {
   centered: "main element in the middle",
   offset: "main element shifted to one side",
   left: "visual weight on the left",
@@ -175,13 +111,11 @@ export const LAYOUT_KEYWORDS: Record<Layout, string> = {
   tight: "elements close together",
   layered: "depth layers, front and back",
 };
+export type Layout = keyof typeof LAYOUT_KEYWORDS;
 
-export function buildLayoutPrompt(layouts: Layout[]): string {
-  const keywords = layouts.map(l => LAYOUT_KEYWORDS[l]).join(", ");
-  return `Layout: ${keywords}.`;
-}
+// --- Subjects ---
 
-export const SUBJECT_KEYWORDS: Record<Subject, string> = {
+export const SUBJECT_KEYWORDS = {
   dashboard: "data dashboard, charts, metrics, KPI cards",
   form: "form builder, input fields, labels, submit actions",
   email: "email, inboxes, messages, notifications, campaigns",
@@ -196,13 +130,11 @@ export const SUBJECT_KEYWORDS: Record<Subject, string> = {
   mobile: "mobile apps, smartphones, app interfaces, on-the-go usage",
   wordpress: "WordPress, themes, plugins, blogging, website building",
 };
+export type Subject = keyof typeof SUBJECT_KEYWORDS;
 
-export function buildSubjectPrompt(subjects: Subject[]): string {
-  const keywords = subjects.map(s => SUBJECT_KEYWORDS[s]).join(", ");
-  return `The subject context is: ${keywords}.`;
-}
+// --- Icon Styles ---
 
-export const ICON_STYLE_KEYWORDS: Record<IconStyle, string> = {
+export const ICON_STYLE_KEYWORDS = {
   outlined: "outlined, stroke-style icons",
   filled: "solid filled icons",
   minimal: "ultra-minimal, basic geometric shapes only",
@@ -212,13 +144,11 @@ export const ICON_STYLE_KEYWORDS: Record<IconStyle, string> = {
   bold: "bold, heavy-weight icons",
   duotone: "duotone, two-tone colored icons",
 };
+export type IconStyle = keyof typeof ICON_STYLE_KEYWORDS;
 
-export function buildIconStylePrompt(iconStyles: IconStyle[]): string {
-  const keywords = iconStyles.map(i => ICON_STYLE_KEYWORDS[i]).join(", ");
-  return `Icon style: ${keywords}.`;
-}
+// --- Placements ---
 
-export const PLACEMENT_KEYWORDS: Record<Placement, string> = {
+export const PLACEMENT_KEYWORDS = {
   hero: "bold, eye-catching, large visual weight, strong focal point",
   feature: "medium visual weight, clear and explanatory, supports adjacent text",
   section: "inline section element, balanced with surrounding content",
@@ -230,8 +160,4 @@ export const PLACEMENT_KEYWORDS: Record<Placement, string> = {
   empty: "minimal, friendly, subtle, lightweight, not attention-grabbing",
   state: "represents a current condition or status, informational",
 };
-
-export function buildPlacementPrompt(placements: Placement[]): string {
-  const keywords = placements.map(p => PLACEMENT_KEYWORDS[p]).join(", ");
-  return `The image placement context is: ${keywords}.`;
-}
+export type Placement = keyof typeof PLACEMENT_KEYWORDS;

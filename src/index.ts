@@ -1,10 +1,9 @@
 import { Env } from "./types";
 import {
-  PALETTES, RENDERINGS, ELEMENTS, COMPOSITIONS,
-  MOODS, COMPLEXITIES, LAYOUTS, SUBJECTS, ICON_STYLES, PLACEMENTS,
-  type Rendering, type IllustrationElement, type Composition,
-  type Subject, type Placement, type Mood, type IconStyle,
-  type Complexity, type Layout,
+  PALETTES,
+  RENDERING_KEYWORDS, ELEMENT_KEYWORDS, COMPOSITION_KEYWORDS,
+  MOOD_KEYWORDS, COMPLEXITY_KEYWORDS, LAYOUT_KEYWORDS,
+  SUBJECT_KEYWORDS, ICON_STYLE_KEYWORDS, PLACEMENT_KEYWORDS,
 } from "./styles";
 import { runPipeline, PipelineError } from "./pipeline";
 
@@ -60,11 +59,9 @@ export default {
       return errorResponse("count must be an integer between 1 and 10", 400);
     }
 
-    // Resolve paletteIndex — supports number, array of numbers, or "random"
+    // Resolve paletteIndex — supports number or array of numbers; omitted picks random
     let resolvedPalette;
-    if (paletteIndex === "random") {
-      resolvedPalette = pickRandom(PALETTES);
-    } else if (Array.isArray(paletteIndex)) {
+    if (Array.isArray(paletteIndex)) {
       const validIndex = (v: unknown): v is number =>
         typeof v === "number" && Number.isInteger(v) && v >= 0 && v < PALETTES.length;
       if (paletteIndex.length === 0 || !paletteIndex.every(validIndex)) {
@@ -76,7 +73,7 @@ export default {
       resolvedPalette = PALETTES[pickRandom(paletteIndex)];
     } else if (paletteIndex != null && (typeof paletteIndex !== "number" || !Number.isInteger(paletteIndex) || paletteIndex < 0 || paletteIndex >= PALETTES.length)) {
       return errorResponse(
-        `Invalid paletteIndex. Must be 0-${PALETTES.length - 1}, an array of indexes, or "random"`,
+        `Invalid paletteIndex. Must be 0-${PALETTES.length - 1} or an array of indexes`,
         400
       );
     } else {
@@ -87,48 +84,45 @@ export default {
       return errorResponse("project must be a string of 200 characters or less", 400);
     }
 
-    // Resolve array-based props helper
+    // Resolve array-based props — omitted picks one random value
     function resolveArrayProp<T extends string>(
-      value: unknown, name: string, valid: readonly T[]
-    ): T[] | undefined | Response {
-      if (value === "random") return [pickRandom([...valid])];
+      value: unknown, name: string, keywords: Record<T, string>
+    ): T[] | Response {
+      const valid = Object.keys(keywords) as T[];
+      if (value == null) return [pickRandom(valid)];
       if (typeof value === "string") {
-        if (!(valid as readonly string[]).includes(value))
-          return errorResponse(`Invalid ${name} "${value}". Valid options: ${valid.join(", ")}, random`, 400);
+        if (!(valid as string[]).includes(value))
+          return errorResponse(`Invalid ${name} "${value}". Valid options: ${valid.join(", ")}`, 400);
         return [value as T];
       }
       if (Array.isArray(value)) {
         for (const v of value) {
-          if (typeof v !== "string" || !(valid as readonly string[]).includes(v))
+          if (typeof v !== "string" || !(valid as string[]).includes(v))
             return errorResponse(`Invalid ${name} "${v}". Valid options: ${valid.join(", ")}`, 400);
         }
-        return value.length > 0 ? (value as T[]) : undefined;
+        return value.length > 0 ? (value as T[]) : [pickRandom(valid)];
       }
-      if (value != null)
-        return errorResponse(`Invalid ${name}. Must be a string, array of strings, or "random"`, 400);
-      return undefined;
+      return errorResponse(`Invalid ${name}. Must be a string or array of strings`, 400);
     }
 
-    const resolvedMoods = resolveArrayProp(moods, "mood", MOODS);
-    if (resolvedMoods instanceof Response) return resolvedMoods;
-    const resolvedComplexities = resolveArrayProp(complexities, "complexity", COMPLEXITIES);
-    if (resolvedComplexities instanceof Response) return resolvedComplexities;
-    const resolvedLayouts = resolveArrayProp(layouts, "layout", LAYOUTS);
-    if (resolvedLayouts instanceof Response) return resolvedLayouts;
-
-    const resolvedSubjects = resolveArrayProp(subjects, "subject", SUBJECTS);
-    if (resolvedSubjects instanceof Response) return resolvedSubjects;
-    const resolvedIconStyles = resolveArrayProp(iconStyles, "iconStyle", ICON_STYLES);
-    if (resolvedIconStyles instanceof Response) return resolvedIconStyles;
-    const resolvedPlacements = resolveArrayProp(placements, "placement", PLACEMENTS);
-    if (resolvedPlacements instanceof Response) return resolvedPlacements;
-
-    const resolvedRenderings = resolveArrayProp(renderings, "rendering", RENDERINGS);
+    const resolvedRenderings = resolveArrayProp(renderings, "rendering", RENDERING_KEYWORDS);
     if (resolvedRenderings instanceof Response) return resolvedRenderings;
-    const resolvedElements = resolveArrayProp(elements, "element", ELEMENTS);
+    const resolvedElements = resolveArrayProp(elements, "element", ELEMENT_KEYWORDS);
     if (resolvedElements instanceof Response) return resolvedElements;
-    const resolvedCompositions = resolveArrayProp(compositions, "composition", COMPOSITIONS);
+    const resolvedCompositions = resolveArrayProp(compositions, "composition", COMPOSITION_KEYWORDS);
     if (resolvedCompositions instanceof Response) return resolvedCompositions;
+    const resolvedMoods = resolveArrayProp(moods, "mood", MOOD_KEYWORDS);
+    if (resolvedMoods instanceof Response) return resolvedMoods;
+    const resolvedComplexities = resolveArrayProp(complexities, "complexity", COMPLEXITY_KEYWORDS);
+    if (resolvedComplexities instanceof Response) return resolvedComplexities;
+    const resolvedLayouts = resolveArrayProp(layouts, "layout", LAYOUT_KEYWORDS);
+    if (resolvedLayouts instanceof Response) return resolvedLayouts;
+    const resolvedSubjects = resolveArrayProp(subjects, "subject", SUBJECT_KEYWORDS);
+    if (resolvedSubjects instanceof Response) return resolvedSubjects;
+    const resolvedIconStyles = resolveArrayProp(iconStyles, "iconStyle", ICON_STYLE_KEYWORDS);
+    if (resolvedIconStyles instanceof Response) return resolvedIconStyles;
+    const resolvedPlacements = resolveArrayProp(placements, "placement", PLACEMENT_KEYWORDS);
+    if (resolvedPlacements instanceof Response) return resolvedPlacements;
 
     const pipelineOptions = {
       palette: resolvedPalette,
@@ -149,17 +143,17 @@ export default {
     );
 
     const config = {
-      renderings: resolvedRenderings ?? null,
-      elements: resolvedElements ?? null,
-      compositions: resolvedCompositions ?? null,
+      renderings: resolvedRenderings,
+      elements: resolvedElements,
+      compositions: resolvedCompositions,
       palette: resolvedPalette,
       project: (project as string | undefined) ?? null,
-      placements: resolvedPlacements ?? null,
-      moods: resolvedMoods ?? null,
-      complexities: resolvedComplexities ?? null,
-      layouts: resolvedLayouts ?? null,
-      subjects: resolvedSubjects ?? null,
-      iconStyles: resolvedIconStyles ?? null,
+      placements: resolvedPlacements,
+      moods: resolvedMoods,
+      complexities: resolvedComplexities,
+      layouts: resolvedLayouts,
+      subjects: resolvedSubjects,
+      iconStyles: resolvedIconStyles,
       count: imageCount,
     };
 
