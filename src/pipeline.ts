@@ -78,9 +78,9 @@ export async function runPipeline(
   if (options.complexities?.length) parts.push(buildPrompt(options.complexities, COMPLEXITY_KEYWORDS, "Composition complexity"));
   if (options.layouts?.length) parts.push(buildPrompt(options.layouts, LAYOUT_KEYWORDS, "Layout"));
   if (options.iconStyles?.length) parts.push(buildPrompt(options.iconStyles, ICON_STYLE_KEYWORDS, "Icon style"));
-  parts.push(`Use this color palette as fill/background colors for UI elements, cards, buttons, and icons: ${chosen.join(", ")}. Text inside elements must be relevant labels or grey skeleton placeholder pills — never display color names or color codes as text.`);
-  parts.push("MANDATORY: The background must be a solid light lavender purple color — no floor, no shadows on the background, and no environmental elements. Do NOT place any floating text, titles, or labels outside of the main subject — all text must stay within UI cards or elements, never on the background.");
-  parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details");
+  parts.push(`Color palette: ${chosen.join(", ")}. Use for fills and accents. Text must be relevant labels — never display color names or codes as text.`);
+  parts.push("MANDATORY: The background must be a solid light lavender purple color.");
+  parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details, no floor, no shadows on background, no environmental elements, no floating text or labels outside the main subject");
 
   const prompt = parts.join(" ");
 
