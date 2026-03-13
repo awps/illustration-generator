@@ -1,8 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { Buffer } from "node:buffer";
 import { Env } from "./types";
-import { Style } from "./styles";
-import { enhancePrompt } from "./ai/prompt-enhancer";
+import {
+  Palette, PALETTES,
+  Rendering, IllustrationElement, Composition,
+  Mood, Complexity, Layout, Subject, IconStyle, Placement,
+  buildRenderingPrompt, buildElementPrompt, buildCompositionPrompt,
+  buildMoodPrompt, buildComplexityPrompt, buildLayoutPrompt,
+  buildSubjectPrompt, buildIconStylePrompt, buildPlacementPrompt,
+} from "./styles";
 import { generateImage } from "./ai/image-generator";
 import { generateId, buildPublicUrl, uploadToR2 } from "./storage/r2";
 
@@ -26,10 +32,24 @@ export interface PipelineResult {
   };
 }
 
+export interface PipelineOptions {
+  palette?: Palette;
+  project?: string;
+  renderings?: Rendering[];
+  elements?: IllustrationElement[];
+  compositions?: Composition[];
+  placements?: Placement[];
+  moods?: Mood[];
+  complexities?: Complexity[];
+  layouts?: Layout[];
+  subjects?: Subject[];
+  iconStyles?: IconStyle[];
+}
+
 export async function runPipeline(
   env: Env,
   userPrompt: string,
-  style: Style
+  options: PipelineOptions = {}
 ): Promise<PipelineResult> {
   const ai = new GoogleGenAI({
     apiKey: env.GEMINI_API_KEY,
@@ -42,19 +62,29 @@ export async function runPipeline(
   const rawKey = `generations/${id}/raw.png`;
   const transparentKey = `generations/${id}/transparent.png`;
 
-  // Step 2: Enhance prompt
-  let enhancedPrompt: string;
-  try {
-    enhancedPrompt = await enhancePrompt(ai, userPrompt, style);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    throw new PipelineError("Prompt enhancement failed", msg, "enhance-prompt", 502);
-  }
+  const chosen = options.palette ?? PALETTES[Math.floor(Math.random() * PALETTES.length)];
+  const parts: string[] = [userPrompt];
+  if (options.renderings?.length) parts.push(buildRenderingPrompt(options.renderings));
+  if (options.elements?.length) parts.push(buildElementPrompt(options.elements));
+  if (options.compositions?.length) parts.push(buildCompositionPrompt(options.compositions));
+  if (options.project) parts.push(`Project context: ${options.project}.`);
+  if (options.subjects?.length) parts.push(buildSubjectPrompt(options.subjects));
+  if (options.placements?.length) parts.push(buildPlacementPrompt(options.placements));
+  if (options.moods?.length) parts.push(buildMoodPrompt(options.moods));
+  if (options.complexities?.length) parts.push(buildComplexityPrompt(options.complexities));
+  if (options.layouts?.length) parts.push(buildLayoutPrompt(options.layouts));
+  if (options.iconStyles?.length) parts.push(buildIconStylePrompt(options.iconStyles));
+  parts.push(`Use this color palette as fill/background colors for UI elements, cards, buttons, and icons: ${chosen.join(", ")}. Text inside elements must be relevant labels or grey skeleton placeholder pills — never display color names or color codes as text.`);
+  parts.push("MANDATORY: The background must be a solid light lavender purple color — no floor, no shadows on the background, and no environmental elements. Do NOT place any floating text, titles, or labels outside of the main subject — all text must stay within UI cards or elements, never on the background.");
+  parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details");
 
-  // Step 3: Generate image
+
+  const prompt = parts.join(" ");
+
+  // Step 2: Generate image
   let rawBytes: Buffer;
   try {
-    const image = await generateImage(ai, enhancedPrompt);
+    const image = await generateImage(ai, prompt);
     rawBytes = Buffer.from(image.base64, "base64");
   } catch (err) {
     if (err instanceof PipelineError) throw err;
