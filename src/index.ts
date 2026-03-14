@@ -154,16 +154,76 @@ export default {
         };
       }
 
-      const shared = isConsistent ? buildPipelineOptions() : null;
-      const runs = Array.from({ length: imageCount }, () =>
-        runPipeline(env, prompt.trim(), shared ?? buildPipelineOptions())
-      );
+      let results: Awaited<ReturnType<typeof runPipeline>>[];
 
-      const results = await Promise.all(runs);
+      if (isExpand) {
+        const allResolved = {
+          renderings: resolvedRenderings,
+          elements: resolvedElements,
+          compositions: resolvedCompositions,
+          placements: resolvedPlacements,
+          moods: resolvedMoods,
+          complexities: resolvedComplexities,
+          layouts: resolvedLayouts,
+          subjects: resolvedSubjects,
+          iconStyles: resolvedIconStyles,
+        } as const;
+
+        const keywordsMap = {
+          renderings: RENDERING_KEYWORDS,
+          elements: ELEMENT_KEYWORDS,
+          compositions: COMPOSITION_KEYWORDS,
+          placements: PLACEMENT_KEYWORDS,
+          moods: MOOD_KEYWORDS,
+          complexities: COMPLEXITY_KEYWORDS,
+          layouts: LAYOUT_KEYWORDS,
+          subjects: SUBJECT_KEYWORDS,
+          iconStyles: ICON_STYLE_KEYWORDS,
+        } as const;
+
+        // Identify varying props (array length > 1)
+        const varying: Record<string, string[]> = {};
+        for (const [key, val] of Object.entries(allResolved)) {
+          if (Array.isArray(val) && val.length > 1) {
+            varying[key] = val;
+          }
+        }
+
+        const combos = cartesianProduct(varying);
+        if (combos.length > 10)
+          fail(`expand produces ${combos.length} combinations, max is 10`);
+
+        const baseOptions = {
+          palette: palette ?? pickRandom(PALETTES),
+          project: project as string | undefined,
+        };
+
+        results = await Promise.all(
+          combos.map(combo => {
+            // For each combo, resolve fixed props fresh (so "random" re-rolls)
+            const freshFixed: Record<string, string[] | undefined> = {};
+            for (const [key, val] of Object.entries(allResolved)) {
+              if (!varying[key]) {
+                const kw = keywordsMap[key as keyof typeof keywordsMap];
+                freshFixed[key] = resolveForPipeline(val as any, kw as any);
+              }
+            }
+            return runPipeline(env, prompt.trim(), { ...baseOptions, ...freshFixed, ...combo });
+          })
+        );
+      } else {
+        const shared = isConsistent ? buildPipelineOptions() : null;
+        const runs = Array.from({ length: imageCount }, () =>
+          runPipeline(env, prompt.trim(), shared ?? buildPipelineOptions())
+        );
+        results = await Promise.all(runs);
+      }
+
+      const totalCount = results.length;
       return jsonResponse({
-        images: imageCount === 1 ? [results[0]] : results,
-        consistent: isConsistent,
-        count: imageCount,
+        images: totalCount === 1 ? [results[0]] : results,
+        ...(isExpand ? { expand: true } : { consistent: isConsistent }),
+        count: totalCount,
       });
     } catch (err) {
       if (err instanceof ValidationError) return errorResponse(err.message, 400);
