@@ -22,17 +22,17 @@ export type Rendering = keyof typeof RENDERING_KEYWORDS;
 // --- Elements ---
 
 export const ELEMENT_KEYWORDS = {
-  cards: "white rounded UI cards/panels with content sections",
-  character: "friendly simplified character with minimal features interacting with subject",
-  object: "product device as central figure — laptop, phone, tablet, or symbolic object",
-  icons: "iconic symbolic objects, simple recognizable forms",
-  browser: "browser window frame with dark top bar, navigation dots, URL bar",
-  badges: "small floating benefit/status badges with checkmark icons",
-  cursors: "pointer or hand cursor hints indicating interactivity",
-  arrows: "directional connectors — dashed or solid arrows showing relationships",
-  pills: "grey rounded placeholder pills for abstracted text content",
-  charts: "data charts, graphs, metric visualizations",
-  tables: "data tables with rows, columns, and status indicators",
+  cards: "1–2 white rounded UI cards with content sections",
+  character: "one friendly simplified character with minimal features interacting with subject",
+  object: "one product device as central figure — a laptop, phone, tablet, or symbolic object",
+  icons: "2–3 iconic symbolic objects, simple recognizable forms",
+  browser: "one browser window frame with dark top bar, navigation dots, URL bar",
+  badges: "1–2 small floating benefit badges with a checkmark icon",
+  cursors: "one single pointer or hand cursor indicating interactivity",
+  arrows: "directional connector arrows showing relationships between elements",
+  pills: "grey rounded placeholder pills for abstracted text within cards",
+  charts: "one data chart or graph visualization",
+  tables: "one data table with rows, columns, and status indicators",
 };
 export type IllustrationElement = keyof typeof ELEMENT_KEYWORDS;
 

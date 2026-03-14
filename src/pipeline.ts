@@ -34,6 +34,19 @@ export interface PipelineResult {
     raw: string;
     transparent: string;
   };
+  config: {
+    palette: Palette;
+    project: string | null;
+    renderings: Rendering[];
+    elements: IllustrationElement[];
+    compositions: Composition[];
+    placements: Placement[];
+    moods: Mood[];
+    complexities: Complexity[];
+    layouts: Layout[];
+    subjects: Subject[];
+    iconStyles: IconStyle[];
+  };
 }
 
 export interface PipelineOptions {
@@ -78,9 +91,9 @@ export async function runPipeline(
   if (options.complexities?.length) parts.push(buildPrompt(options.complexities, COMPLEXITY_KEYWORDS, "Composition complexity"));
   if (options.layouts?.length) parts.push(buildPrompt(options.layouts, LAYOUT_KEYWORDS, "Layout"));
   if (options.iconStyles?.length) parts.push(buildPrompt(options.iconStyles, ICON_STYLE_KEYWORDS, "Icon style"));
-  parts.push(`Color palette: ${chosen.join(", ")}. Use for fills and accents. Text must be relevant labels — never display color names or codes as text.`);
-  parts.push("MANDATORY: The background must be a solid light lavender purple color.");
-  parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details, no floor, no shadows on background, no environmental elements, no floating text or labels outside the main subject");
+  parts.push(`Color palette: ${chosen.join(", ")}. Use these colors only as fills and accents — NEVER EVER render the hex codes, color names, or palette values as visible text anywhere in the image. ONLY use the colors as visual design elements within the composition.`);
+  parts.push("MANDATORY: The background must be nice modern subtle dark gradient with ligthened radial. All illustration elements must form one compact, self-contained visual cluster centered in the image with generous empty margin on all sides. No element should touch or extend to the image edges. All text must stay within UI cards or elements — never place titles, labels, or text on the background. Each element type must appear only the exact number of times specified — never duplicate cursors, browsers, characters, or toggles. Keep the total element count low and intentional.");
+  parts.push("--no monochrome, no grayscale, no photo-realistic, no clutter, no text watermarks, no busy details, no floor, no shadows on background, no environmental elements, no floating text or labels outside the main subject, no gradient backgrounds, no fading edges, no scattered disconnected elements, no hex codes as text, no color names as text, no duplicate interactive elements, no repeated cursors or toggles");
 
   const prompt = parts.join(" ");
 
@@ -135,6 +148,19 @@ export async function runPipeline(
     urls: {
       raw: buildPublicUrl(env, rawKey),
       transparent: buildPublicUrl(env, transparentKey),
+    },
+    config: {
+      palette: chosen,
+      project: options.project ?? null,
+      renderings: options.renderings ?? [],
+      elements: options.elements ?? [],
+      compositions: options.compositions ?? [],
+      placements: options.placements ?? [],
+      moods: options.moods ?? [],
+      complexities: options.complexities ?? [],
+      layouts: options.layouts ?? [],
+      subjects: options.subjects ?? [],
+      iconStyles: options.iconStyles ?? [],
     },
   };
 }

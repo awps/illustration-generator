@@ -44,7 +44,7 @@ export default {
       return errorResponse("Invalid JSON", 400);
     }
 
-    const { prompt, paletteIndex, project, renderings, elements, compositions, placements, moods, complexities, layouts, subjects, iconStyles, count } = body as Record<string, unknown>;
+    const { prompt, paletteIndex, project, renderings, elements, compositions, placements, moods, complexities, layouts, subjects, iconStyles, count, consistent } = body as Record<string, unknown>;
 
     if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
       return errorResponse("prompt is required", 400);
@@ -80,19 +80,25 @@ export default {
       resolvedPalette = paletteIndex != null ? PALETTES[paletteIndex as number] : undefined;
     }
 
+    const isConsistent = consistent === true;
+    if (consistent != null && typeof consistent !== "boolean") {
+      return errorResponse("consistent must be a boolean", 400);
+    }
+
     if (project != null && (typeof project !== "string" || project.length > 200)) {
       return errorResponse("project must be a string of 200 characters or less", 400);
     }
 
-    // Resolve array-based props — omitted picks one random value
+    // Validate array-based props — omitted = not included, "random" = pick one
     function resolveArrayProp<T extends string>(
       value: unknown, name: string, keywords: Record<T, string>
-    ): T[] | Response {
+    ): T[] | "random" | null | Response {
       const valid = Object.keys(keywords) as T[];
-      if (value == null) return [pickRandom(valid)];
+      if (value == null) return null;
+      if (value === "random") return "random";
       if (typeof value === "string") {
         if (!(valid as string[]).includes(value))
-          return errorResponse(`Invalid ${name} "${value}". Valid options: ${valid.join(", ")}`, 400);
+          return errorResponse(`Invalid ${name} "${value}". Valid options: ${valid.join(", ")}, random`, 400);
         return [value as T];
       }
       if (Array.isArray(value)) {
@@ -100,9 +106,16 @@ export default {
           if (typeof v !== "string" || !(valid as string[]).includes(v))
             return errorResponse(`Invalid ${name} "${v}". Valid options: ${valid.join(", ")}`, 400);
         }
-        return value.length > 0 ? (value as T[]) : [pickRandom(valid)];
+        return value.length > 0 ? (value as T[]) : null;
       }
-      return errorResponse(`Invalid ${name}. Must be a string or array of strings`, 400);
+      return errorResponse(`Invalid ${name}. Must be a string, array of strings, or "random"`, 400);
+    }
+
+    function resolveForPipeline<T extends string>(
+      resolved: T[] | "random" | null, keywords: Record<T, string>
+    ): T[] | undefined {
+      if (resolved === "random") return [pickRandom(Object.keys(keywords) as T[])];
+      return resolved ?? undefined;
     }
 
     const resolvedRenderings = resolveArrayProp(renderings, "rendering", RENDERING_KEYWORDS);
@@ -124,44 +137,33 @@ export default {
     const resolvedPlacements = resolveArrayProp(placements, "placement", PLACEMENT_KEYWORDS);
     if (resolvedPlacements instanceof Response) return resolvedPlacements;
 
-    const pipelineOptions = {
-      palette: resolvedPalette,
-      project: project as string | undefined,
-      renderings: resolvedRenderings,
-      elements: resolvedElements,
-      compositions: resolvedCompositions,
-      placements: resolvedPlacements,
-      moods: resolvedMoods,
-      complexities: resolvedComplexities,
-      layouts: resolvedLayouts,
-      subjects: resolvedSubjects,
-      iconStyles: resolvedIconStyles,
-    };
+    function buildPipelineOptions() {
+      return {
+        palette: resolvedPalette ?? PALETTES[Math.floor(Math.random() * PALETTES.length)],
+        project: project as string | undefined,
+        renderings: resolveForPipeline(resolvedRenderings, RENDERING_KEYWORDS),
+        elements: resolveForPipeline(resolvedElements, ELEMENT_KEYWORDS),
+        compositions: resolveForPipeline(resolvedCompositions, COMPOSITION_KEYWORDS),
+        placements: resolveForPipeline(resolvedPlacements, PLACEMENT_KEYWORDS),
+        moods: resolveForPipeline(resolvedMoods, MOOD_KEYWORDS),
+        complexities: resolveForPipeline(resolvedComplexities, COMPLEXITY_KEYWORDS),
+        layouts: resolveForPipeline(resolvedLayouts, LAYOUT_KEYWORDS),
+        subjects: resolveForPipeline(resolvedSubjects, SUBJECT_KEYWORDS),
+        iconStyles: resolveForPipeline(resolvedIconStyles, ICON_STYLE_KEYWORDS),
+      };
+    }
 
+    const shared = isConsistent ? buildPipelineOptions() : null;
     const runs = Array.from({ length: imageCount }, () =>
-      runPipeline(env, prompt.trim(), pipelineOptions)
+      runPipeline(env, prompt.trim(), shared ?? buildPipelineOptions())
     );
-
-    const config = {
-      renderings: resolvedRenderings,
-      elements: resolvedElements,
-      compositions: resolvedCompositions,
-      palette: resolvedPalette,
-      project: (project as string | undefined) ?? null,
-      placements: resolvedPlacements,
-      moods: resolvedMoods,
-      complexities: resolvedComplexities,
-      layouts: resolvedLayouts,
-      subjects: resolvedSubjects,
-      iconStyles: resolvedIconStyles,
-      count: imageCount,
-    };
 
     try {
       const results = await Promise.all(runs);
       return jsonResponse({
         images: imageCount === 1 ? [results[0]] : results,
-        config,
+        consistent: isConsistent,
+        count: imageCount,
       });
     } catch (err) {
       if (err instanceof PipelineError) {

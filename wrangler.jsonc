@@ -10,8 +10,8 @@
     }
   ],
   "vars": {
-    "CLOUDFLARE_ACCOUNT_ID": "",
-    "AI_GATEWAY_ID": "",
+    "CLOUDFLARE_ACCOUNT_ID": "205c25cc544c6a9b0d96199c6843c172",
+    "AI_GATEWAY_ID": "illustrations",
     "IMAGES_DOMAIN": "imagen.publingo.com"
   }
 }
