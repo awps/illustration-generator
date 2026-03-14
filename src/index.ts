@@ -100,7 +100,7 @@ export default {
     const {
       prompt, paletteIndex, project, renderings, elements, compositions,
       placements, moods, complexities, layouts, subjects, iconStyles,
-      count, consistent
+      count, consistent, expand
     } = body as Record<string, unknown>;
 
     if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0)
@@ -117,6 +117,14 @@ export default {
       return errorResponse("consistent must be a boolean", 400);
     if (project != null && (typeof project !== "string" || project.length > 200))
       return errorResponse("project must be a string of 200 characters or less", 400);
+
+    const isExpand = expand === true;
+    if (expand != null && typeof expand !== "boolean")
+      return errorResponse("expand must be a boolean", 400);
+    if (isExpand && count != null)
+      return errorResponse("expand and count cannot be used together", 400);
+    if (isExpand && isConsistent)
+      return errorResponse("expand and consistent cannot be used together", 400);
 
     try {
       const palette = resolvePalette(paletteIndex);
