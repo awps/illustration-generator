@@ -14,8 +14,8 @@ When `true`, the API computes the cartesian product of all array style props tha
 
 ### Mutual exclusivity
 
-- `expand` + `count` → 400 error: `"expand and count cannot be used together"`
-- `expand` + `consistent` → 400 error: `"expand and consistent cannot be used together"`
+- `expand` + `count` → 400 error: `"expand and count cannot be used together"`. Check the raw `count` field from the request body (`count != null`), not the post-default `imageCount` (which defaults to 1 when omitted).
+- `expand` + `consistent: true` → 400 error: `"expand and consistent cannot be used together"`. Only fires when `consistent` is explicitly `true`, not when omitted or `false`.
 
 ### Combination limit
 
@@ -36,7 +36,10 @@ Props that do **not** expand:
 
 1. Resolve all array props via existing `resolveArrayProp` (validates values)
 2. Identify "varying" props: those with a resolved array of length > 1
-3. Non-varying props (null, "random", or single-element arrays) resolve per-combination via existing `resolveForPipeline` — meaning `"random"` still picks fresh random values for each combination
+3. Non-varying props resolve per-combination via existing `resolveForPipeline`:
+   - `null` (omitted) → `undefined`, prop not included
+   - `"random"` → fresh random pick per combination
+   - single-element array `["flat"]` → fixed value, same across all combinations
 4. Compute cartesian product of the varying props
 5. For each combination, build `PipelineOptions` with each varying prop set to a single-element array `[value]`
 6. Run all combinations through `runPipeline` in parallel
@@ -68,23 +71,36 @@ Props that do **not** expand:
 }
 ```
 
+### Response shape
+
+Same `images` array as today. When `expand` is true:
+- `count` in the response equals the number of combinations generated (not a request input)
+- `expand: true` is included in the response
+- The `images` array always contains all results (never the single-element unwrap that `count: 1` uses)
+
 ### Scope
 
 All changes in `src/index.ts`. The pipeline (`src/pipeline.ts`) and styles (`src/styles/index.ts`) are untouched.
 
 ### Implementation sketch
 
-In `src/index.ts`, after the existing prop resolution block:
+A `cartesianProduct` helper with signature:
 
 ```ts
-// When expand is true, compute cartesian product of multi-value props
-// and generate one image per combination
+function cartesianProduct(
+  varying: Record<string, string[]>
+): Record<string, [string]>[]
+```
+
+Takes a record of `{ propName: values[] }` and returns an array of objects where each varying prop is a single-element array `[value]`.
+
+In the handler, after prop resolution:
+
+```ts
 if (isExpand) {
-  const varying = { renderings, elements, ... } // only props with length > 1
+  // baseOptions: palette, project, plus resolveForPipeline for non-varying props
   const combos = cartesianProduct(varying);
-  // cap at 10
+  if (combos.length > 10) fail("expand produces N combinations, max is 10");
   const runs = combos.map(combo => runPipeline(env, prompt, { ...baseOptions, ...combo }));
 }
 ```
-
-A generic `cartesianProduct` helper takes a record of `{ propName: values[] }` and returns an array of `{ propName: [singleValue] }` objects.
