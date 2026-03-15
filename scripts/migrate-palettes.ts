@@ -263,10 +263,6 @@ for (const category of ["by-color", "by-style", "by-topic", "by-number"]) {
     const palettes: string[][] = JSON.parse(readFileSync(join(dir, file), "utf-8"));
 
     for (const colors of palettes) {
-      // Skip degenerate palettes (all same color or fewer than 2 unique)
-      const unique = new Set(colors.map(c => c.replace(/\s/g, "")));
-      if (unique.size < 2) continue;
-
       const id = hashColors(colors);
       registry.set(id, colors);
 
