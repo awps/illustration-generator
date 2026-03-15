@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Palette Viewer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0e0e10; color: #e0e0e0; padding: 24px; }
+
+  .filters { position: sticky; top: 0; z-index: 10; background: #0e0e10; padding: 16px 0 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; border-bottom: 1px solid #222; margin-bottom: 24px; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; }
+  .filter-group select { background: #1a1a1e; color: #e0e0e0; border: 1px solid #333; border-radius: 6px; padding: 6px 10px; font-size: 13px; cursor: pointer; }
+  .filter-group select:focus { outline: none; border-color: #555; }
+
+  .stats { font-size: 13px; color: #888; align-self: flex-end; margin-left: auto; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+  .card { background: #1a1a1e; border-radius: 10px; padding: 14px; transition: transform 0.15s; cursor: pointer; }
+  .card:hover { transform: translateY(-2px); }
+  .card.selected { outline: 2px solid #5b8def; }
+
+  .swatches { display: flex; height: 48px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
+  .swatch { flex: 1; transition: flex 0.2s; }
+  .card:hover .swatch:hover { flex: 2; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .id { font-family: monospace; font-size: 11px; color: #666; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #252528; color: #aaa; }
+  .tag.color { background: #1e2a1e; color: #7ec87e; }
+  .tag.style { background: #2a1e2e; color: #b87ec8; }
+  .tag.topic { background: #1e2430; color: #7eaac8; }
+  .tag.count { background: #2a2a1e; color: #c8b87e; }
+
+  .detail-panel { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1e; border-top: 1px solid #333; padding: 16px 24px; z-index: 20; }
+  .detail-panel.visible { display: flex; gap: 24px; align-items: center; }
+  .detail-swatches { display: flex; height: 40px; border-radius: 6px; overflow: hidden; width: 200px; flex-shrink: 0; }
+  .detail-colors { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+  .detail-color { font-family: monospace; font-size: 12px; color: #aaa; }
+  .detail-id { font-family: monospace; font-size: 13px; color: #5b8def; margin-right: 16px; }
+  .detail-close { background: none; border: 1px solid #444; color: #aaa; border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 12px; }
+  .detail-close:hover { background: #252528; }
+</style>
+</head>
+<body>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Predominant Color</label>
+    <select id="f-color"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Style</label>
+    <select id="f-style"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Topic</label>
+    <select id="f-topic"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Colors Count</label>
+    <select id="f-count"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Search ID</label>
+    <input id="f-search" type="text" placeholder="e.g. a3f2c1" style="background:#1a1a1e;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;width:120px;">
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="detail-panel" id="detail">
+  <div class="detail-swatches" id="detail-swatches"></div>
+  <span class="detail-id" id="detail-id"></span>
+  <div class="detail-colors" id="detail-colors"></div>
+  <button class="detail-close" onclick="closeDetail()">Close</button>
+</div>
+
+<script>
+let DATA = {};
+let allEntries = [];
+
+async function loadData() {
+  const resp = await fetch('../src/palettes.json');
+  DATA = await resp.json();
+  allEntries = Object.entries(DATA);
+  populateFilters();
+  render();
+}
+
+function populateFilters() {
+  const colors = new Set(), styles = new Set(), topics = new Set(), counts = new Set();
+  for (const [, e] of allEntries) {
+    colors.add(e.predominantColor);
+    styles.add(e.style);
+    topics.add(e.topic);
+    counts.add(e.totalColors);
+  }
+  fill('f-color', [...colors].sort());
+  fill('f-style', [...styles].sort());
+  fill('f-topic', [...topics].sort());
+  fill('f-count', [...counts].sort((a, b) => a - b));
+}
+
+function fill(id, values) {
+  const sel = document.getElementById(id);
+  for (const v of values) {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    sel.appendChild(opt);
+  }
+}
+
+function getFilters() {
+  return {
+    color: document.getElementById('f-color').value,
+    style: document.getElementById('f-style').value,
+    topic: document.getElementById('f-topic').value,
+    count: document.getElementById('f-count').value,
+    search: document.getElementById('f-search').value.trim().toLowerCase(),
+  };
+}
+
+function render() {
+  const f = getFilters();
+  const grid = document.getElementById('grid');
+  const filtered = allEntries.filter(([id, e]) => {
+    if (f.color && e.predominantColor !== f.color) return false;
+    if (f.style && e.style !== f.style) return false;
+    if (f.topic && e.topic !== f.topic) return false;
+    if (f.count && e.totalColors !== +f.count) return false;
+    if (f.search && !id.includes(f.search)) return false;
+    return true;
+  });
+
+  document.getElementById('stats').textContent = `${filtered.length} / ${allEntries.length} palettes`;
+
+  // Render in batches for performance
+  grid.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  const limit = Math.min(filtered.length, 500);
+
+  for (let i = 0; i < limit; i++) {
+    const [id, entry] = filtered[i];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => showDetail(id, entry);
+
+    const swatches = document.createElement('div');
+    swatches.className = 'swatches';
+    for (const color of entry.colors) {
+      const s = document.createElement('div');
+      s.className = 'swatch';
+      s.style.backgroundColor = color;
+      s.title = color;
+      swatches.appendChild(s);
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.innerHTML = `
+      <span class="id">${id}</span>
+      <span class="tag color">${entry.predominantColor}</span>
+      <span class="tag style">${entry.style}</span>
+      <span class="tag topic">${entry.topic}</span>
+      <span class="tag count">${entry.totalColors} colors</span>
+    `;
+
+    card.appendChild(swatches);
+    card.appendChild(meta);
+    fragment.appendChild(card);
+  }
+
+  grid.appendChild(fragment);
+
+  if (filtered.length > limit) {
+    const more = document.createElement('div');
+    more.style.cssText = 'grid-column:1/-1;text-align:center;padding:20px;color:#666;font-size:13px;';
+    more.textContent = `Showing ${limit} of ${filtered.length} — narrow filters to see more`;
+    grid.appendChild(more);
+  }
+}
+
+function showDetail(id, entry) {
+  const panel = document.getElementById('detail');
+  panel.className = 'detail-panel visible';
+  document.getElementById('detail-id').textContent = id;
+
+  const sw = document.getElementById('detail-swatches');
+  sw.innerHTML = '';
+  for (const color of entry.colors) {
+    const s = document.createElement('div');
+    s.className = 'swatch';
+    s.style.backgroundColor = color;
+    sw.appendChild(s);
+  }
+
+  const dc = document.getElementById('detail-colors');
+  dc.innerHTML = entry.colors.map(c => `<span class="detail-color">${c}</span>`).join('');
+}
+
+function closeDetail() {
+  document.getElementById('detail').className = 'detail-panel';
+}
+
+document.getElementById('f-color').onchange = render;
+document.getElementById('f-style').onchange = render;
+document.getElementById('f-topic').onchange = render;
+document.getElementById('f-count').onchange = render;
+document.getElementById('f-search').oninput = render;
+
+loadData();
+</script>
+</body>
+</html>
