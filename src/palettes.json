@@ -21502,16 +21502,6 @@
       "style": "bright",
       "topic": "kids"
     },
-    "9824c75e": {
-      "colors": [
-        "rgb(255,84,0)",
-        "rgb(255,84,0)"
-      ],
-      "totalColors": 2,
-      "predominantColor": "orange",
-      "style": "bright",
-      "topic": "food"
-    },
     "35f71cd5": {
       "colors": [
         "rgb(0,255,255)",
@@ -22139,16 +22129,6 @@
       "predominantColor": "mixed",
       "style": "bright",
       "topic": "kids"
-    },
-    "2244f5b4": {
-      "colors": [
-        "rgb(255,0,0)",
-        "rgb(255,0,0)"
-      ],
-      "totalColors": 2,
-      "predominantColor": "red",
-      "style": "bright",
-      "topic": "food"
     },
     "d53ed62b": {
       "colors": [
@@ -23574,19 +23554,6 @@
       "style": "cold",
       "topic": "winter"
     },
-    "532506b9": {
-      "colors": [
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)"
-      ],
-      "totalColors": 5,
-      "predominantColor": "gray",
-      "style": "dark",
-      "topic": "happy"
-    },
     "30edc53e": {
       "colors": [
         "rgb(0,0,0)",
@@ -23858,16 +23825,6 @@
       "style": "dark",
       "topic": "space"
     },
-    "430b1ad0": {
-      "colors": [
-        "rgb(0,0,0)",
-        "rgb(0,0,0)"
-      ],
-      "totalColors": 2,
-      "predominantColor": "gray",
-      "style": "dark",
-      "topic": "happy"
-    },
     "6e008965": {
       "colors": [
         "rgb(10,17,40)",
@@ -23911,17 +23868,6 @@
       "predominantColor": "turquoise",
       "style": "dark",
       "topic": "space"
-    },
-    "dc358d66": {
-      "colors": [
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)"
-      ],
-      "totalColors": 3,
-      "predominantColor": "gray",
-      "style": "dark",
-      "topic": "happy"
     },
     "f7cc659d": {
       "colors": [
@@ -24308,24 +24254,6 @@
       ],
       "totalColors": 4,
       "predominantColor": "green",
-      "style": "dark",
-      "topic": "happy"
-    },
-    "1d3e5d42": {
-      "colors": [
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)",
-        "rgb(0,0,0)"
-      ],
-      "totalColors": 10,
-      "predominantColor": "gray",
       "style": "dark",
       "topic": "happy"
     },
@@ -26840,19 +26768,6 @@
       "style": "monochromatic",
       "topic": "water"
     },
-    "3cf990e4": {
-      "colors": [
-        "rgb(255,255,255)",
-        "rgb(255,255,255)",
-        "rgb(255,255,255)",
-        "rgb(255,255,255)",
-        "rgb(255,255,255)"
-      ],
-      "totalColors": 5,
-      "predominantColor": "gray",
-      "style": "monochromatic",
-      "topic": "summer"
-    },
     "3bd99b0f": {
       "colors": [
         "rgb(15,51,117)",
@@ -27120,16 +27035,6 @@
       "predominantColor": "turquoise",
       "style": "monochromatic",
       "topic": "water"
-    },
-    "48687f5a": {
-      "colors": [
-        "rgb(255,255,255)",
-        "rgb(255,255,255)"
-      ],
-      "totalColors": 2,
-      "predominantColor": "gray",
-      "style": "monochromatic",
-      "topic": "happy"
     },
     "d4a61d23": {
       "colors": [
@@ -35339,16 +35244,6 @@
       "predominantColor": "blue",
       "style": "dark",
       "topic": "space"
-    },
-    "a17714f8": {
-      "colors": [
-        "rgb(135,179,141)",
-        "rgb(135,179,141)"
-      ],
-      "totalColors": 2,
-      "predominantColor": "green",
-      "style": "monochromatic",
-      "topic": "happy"
     },
     "1d80673e": {
       "colors": [
