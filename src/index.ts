@@ -1,11 +1,10 @@
 import { Env } from "./types";
 import {
-  PALETTES,
   RENDERING_KEYWORDS, ELEMENT_KEYWORDS, COMPOSITION_KEYWORDS,
   MOOD_KEYWORDS, COMPLEXITY_KEYWORDS, LAYOUT_KEYWORDS,
   SUBJECT_KEYWORDS, ICON_STYLE_KEYWORDS, PLACEMENT_KEYWORDS,
-  Palette,
 } from "./styles";
+import { resolvePalette } from "./palettes";
 import {runPipeline, PipelineError} from "./pipeline";
 
 function pickRandom<T>(arr: readonly T[]): T {
@@ -32,19 +31,6 @@ function fail(message: string): never {
   throw new ValidationError(message);
 }
 
-function resolvePalette(paletteIndex: unknown): Palette | undefined {
-  if (paletteIndex == null) return undefined;
-  if (Array.isArray(paletteIndex)) {
-    const validIndex = (v: unknown): v is number =>
-      typeof v === "number" && Number.isInteger(v) && v >= 0 && v < PALETTES.length;
-    if (paletteIndex.length === 0 || !paletteIndex.every(validIndex))
-      fail(`Invalid paletteIndex array. Each value must be 0-${PALETTES.length - 1}`);
-    return PALETTES[pickRandom(paletteIndex)];
-  }
-  if (typeof paletteIndex !== "number" || !Number.isInteger(paletteIndex) || paletteIndex < 0 || paletteIndex >= PALETTES.length)
-    fail(`Invalid paletteIndex. Must be 0-${PALETTES.length - 1} or an array of indexes`);
-  return PALETTES[paletteIndex];
-}
 
 function resolveArrayProp<T extends string>(
   value: unknown, name: string, keywords: Record<T, string>
@@ -98,7 +84,7 @@ export default {
     try { body = await request.json(); } catch { return errorResponse("Invalid JSON", 400); }
 
     const {
-      prompt, paletteIndex, project, renderings, elements, compositions,
+      prompt, palette: paletteInput, project, renderings, elements, compositions,
       placements, moods, complexities, layouts, subjects, iconStyles,
       count, consistent, expand
     } = body as Record<string, unknown>;
@@ -127,7 +113,7 @@ export default {
       return errorResponse("expand and consistent cannot be used together", 400);
 
     try {
-      const palette = resolvePalette(paletteIndex);
+      const palette = resolvePalette(paletteInput);
       const resolvedRenderings = resolveArrayProp(renderings, "rendering", RENDERING_KEYWORDS);
       const resolvedElements = resolveArrayProp(elements, "element", ELEMENT_KEYWORDS);
       const resolvedCompositions = resolveArrayProp(compositions, "composition", COMPOSITION_KEYWORDS);
@@ -140,7 +126,7 @@ export default {
 
       function buildPipelineOptions() {
         return {
-          palette: palette ?? pickRandom(PALETTES),
+          palette,
           project: project as string | undefined,
           renderings: resolveForPipeline(resolvedRenderings, RENDERING_KEYWORDS),
           elements: resolveForPipeline(resolvedElements, ELEMENT_KEYWORDS),
@@ -190,11 +176,11 @@ export default {
         }
 
         const combos = cartesianProduct(varying);
-        if (combos.length > 10)
-          fail(`expand produces ${combos.length} combinations, max is 10`);
+        if (combos.length > 20)
+          fail(`expand produces ${combos.length} combinations, max is 20`);
 
         const baseOptions = {
-          palette: palette ?? pickRandom(PALETTES),
+          palette,
           project: project as string | undefined,
         };
 

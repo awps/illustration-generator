@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { Buffer } from "node:buffer";
 import { Env } from "./types";
 import {
-  Palette, PALETTES, buildPrompt,
+  Palette, buildPrompt,
   type Rendering, RENDERING_KEYWORDS,
   type IllustrationElement, ELEMENT_KEYWORDS,
   type Composition, COMPOSITION_KEYWORDS,
@@ -13,6 +13,7 @@ import {
   type IconStyle, ICON_STYLE_KEYWORDS,
   type Placement, PLACEMENT_KEYWORDS,
 } from "./styles";
+import { type ResolvedPalette } from "./palettes";
 import { generateImage } from "./ai/image-generator";
 import { generateId, buildPublicUrl, uploadToR2 } from "./storage/r2";
 
@@ -35,7 +36,7 @@ export interface PipelineResult {
     transparent: string;
   };
   config: {
-    palette: Palette;
+    palette: ResolvedPalette;
     project: string | null;
     renderings: Rendering[];
     elements: IllustrationElement[];
@@ -50,7 +51,7 @@ export interface PipelineResult {
 }
 
 export interface PipelineOptions {
-  palette?: Palette;
+  palette: ResolvedPalette;
   project?: string;
   renderings?: Rendering[];
   elements?: IllustrationElement[];
@@ -66,7 +67,7 @@ export interface PipelineOptions {
 export async function runPipeline(
   env: Env,
   userPrompt: string,
-  options: PipelineOptions = {}
+  options: PipelineOptions
 ): Promise<PipelineResult> {
   const ai = new GoogleGenAI({
     apiKey: env.GEMINI_API_KEY,
@@ -79,7 +80,7 @@ export async function runPipeline(
   const rawKey = `generations/${id}/raw.png`;
   const transparentKey = `generations/${id}/transparent.png`;
 
-  const chosen = options.palette ?? PALETTES[Math.floor(Math.random() * PALETTES.length)];
+  const chosen = options.palette.colors;
   const parts: string[] = [userPrompt];
   if (options.renderings?.length) parts.push(buildPrompt(options.renderings, RENDERING_KEYWORDS, "Rendering style"));
   if (options.elements?.length) parts.push(buildPrompt(options.elements, ELEMENT_KEYWORDS, "Visual elements"));
@@ -150,7 +151,7 @@ export async function runPipeline(
       transparent: buildPublicUrl(env, transparentKey),
     },
     config: {
-      palette: chosen,
+      palette: options.palette,
       project: options.project ?? null,
       renderings: options.renderings ?? [],
       elements: options.elements ?? [],

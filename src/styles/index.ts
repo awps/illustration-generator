@@ -1,8 +1,5 @@
 export type Palette = string[];
 
-import palettes from "../palletes/violet.json";
-export const PALETTES: Palette[] = palettes;
-
 export function buildPrompt<K extends string>(keys: K[], keywords: Record<K, string>, label: string): string {
   return `${label}: ${keys.map(k => keywords[k]).join(", ")}.`;
 }
@@ -13,9 +10,17 @@ export const RENDERING_KEYWORDS = {
   flat: "clean flat color fills, no outlines, rounded soft shapes, 2D",
   bold: "bold heavy shapes, strong visual weight, thick prominent forms",
   geometric: "sharp angular shapes, structured mathematical forms",
-  editorial: "conceptual editorial design, bold composition, magazine-ready",
   lineart: "single-weight line illustration, elegant stroked forms",
-  infographic: "information design aesthetic, clear visual hierarchy, diagram-friendly",
+  clay: "claymorphism style, soft extruded shapes, subtle shadows, tactile feel",
+  "3d": "volumetric 3D-rendered shapes, soft lighting, depth and perspective",
+  handdrawn: "sketchy organic lines, imperfect hand-drawn strokes, natural feel",
+  isometric: "isometric projection, technical 3D-on-2D grid, structured depth",
+  gradient: "smooth color gradients, mesh-gradient fills, modern blended surfaces",
+  watercolor: "soft painterly washes, organic color bleeding, textured edges",
+  pixel: "pixel art, chunky grid-aligned shapes, retro gaming aesthetic",
+  cubist: "abstract deconstructed forms, multiple perspectives, fragmented geometric planes",
+  risograph: "grainy risograph print texture, limited ink colors, visible grain and stamp-like fills, bold exaggerated forms",
+  doodle: "loose quick doodle sketches, scribbly line work, monochrome fills with sparse color accents, cartoonish exaggerated proportions",
 };
 export type Rendering = keyof typeof RENDERING_KEYWORDS;
 
@@ -26,11 +31,11 @@ export const ELEMENT_KEYWORDS = {
   character: "one friendly simplified character with minimal features interacting with subject",
   object: "one product device as central figure — a laptop, phone, tablet, or symbolic object",
   icons: "2–3 iconic symbolic objects, simple recognizable forms",
-  browser: "one browser window frame with dark top bar, navigation dots, URL bar",
+  browser: "one browser window frame with dark top bar, navigation dots (red, yellow, green), URL bar",
   badges: "1–2 small floating benefit badges with a checkmark icon",
   cursors: "one single pointer or hand cursor indicating interactivity",
   arrows: "directional connector arrows showing relationships between elements",
-  pills: "grey rounded placeholder pills for abstracted text within cards",
+  pills: "rounded placeholder pills for abstracted text within cards — use a very light tint of the palette's primary color instead of grey so they remain visible after background removal",
   charts: "one data chart or graph visualization",
   tables: "one data table with rows, columns, and status indicators",
 };
@@ -46,6 +51,7 @@ export const COMPOSITION_KEYWORDS = {
   collection: "curated set of related items in balanced arrangement",
   diagram: "explanatory visual with labeled parts and connections",
   split: "side-by-side panels, comparison or input/output view",
+  editorial: "conceptual editorial design, bold composition, magazine-ready",
 };
 export type Composition = keyof typeof COMPOSITION_KEYWORDS;
 
@@ -75,6 +81,7 @@ export type Mood = keyof typeof MOOD_KEYWORDS;
 // --- Complexities ---
 
 export const COMPLEXITY_KEYWORDS = {
+  single: "only one central element, simple composition",
   few: "only 1-2 key elements",
   several: "3-4 elements",
   many: "5+ elements",
@@ -129,6 +136,7 @@ export const SUBJECT_KEYWORDS = {
   website: "website, landing pages, blogs, portfolios, online presence",
   mobile: "mobile apps, smartphones, app interfaces, on-the-go usage",
   wordpress: "WordPress, themes, plugins, blogging, website building",
+  management: "management, admin panels, user roles, organizational tools",
 };
 export type Subject = keyof typeof SUBJECT_KEYWORDS;
 
