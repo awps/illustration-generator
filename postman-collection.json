@@ -26,7 +26,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\", \"cursors\"],\n  \"compositions\": [\"abstract\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\", \"cursors\"],\n  \"compositions\": [\"abstract\"],\n  \"palette\": [\"blue\", \"pastel\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
@@ -38,7 +38,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Email automation workflow\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"arrows\"],\n  \"compositions\": [\"flow\"],\n  \"paletteIndex\": 2,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"vertical\", \"stacked\"],\n  \"subjects\": [\"email\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Email automation workflow\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"arrows\"],\n  \"compositions\": [\"flow\"],\n  \"palette\": [\"warm\", \"5\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"vertical\", \"stacked\"],\n  \"subjects\": [\"email\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
@@ -50,19 +50,19 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Third-party integrations and connected services\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"orbit\"],\n  \"paletteIndex\": 3,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"techy\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\", \"symmetric\"],\n  \"subjects\": [\"integration\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Third-party integrations and connected services\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"orbit\"],\n  \"palette\": [\"turquoise\", \"bright\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"techy\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\", \"symmetric\"],\n  \"subjects\": [\"integration\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat+Infographic / Browser+Cards+Tables / Showcase — Analytics Dashboard",
+      "name": "Flat / Browser+Cards+Tables / Showcase — Analytics Dashboard",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Analytics dashboard with traffic metrics\",\n  \"renderings\": [\"flat\", \"infographic\"],\n  \"elements\": [\"browser\", \"cards\", \"tables\", \"pills\"],\n  \"compositions\": [\"showcase\"],\n  \"paletteIndex\": 1,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"asymmetric\", \"layered\"],\n  \"subjects\": [\"analytics\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Analytics dashboard with traffic metrics\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"browser\", \"cards\", \"tables\", \"pills\"],\n  \"compositions\": [\"showcase\"],\n  \"palette\": [\"blue\", \"dark\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"asymmetric\", \"layered\"],\n  \"subjects\": [\"analytics\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
@@ -74,43 +74,43 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"collection\"],\n  \"paletteIndex\": 4,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"blog\"],\n  \"moods\": [\"playful\"],\n  \"complexities\": [\"balanced\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"collection\"],\n  \"palette\": [\"violet\", \"bright\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"blog\"],\n  \"moods\": [\"playful\"],\n  \"complexities\": [\"balanced\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Character+Object — Friendly Hero",
+      "name": "Clay / Character+Object — Friendly Hero",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"character\", \"object\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"clay\"],\n  \"elements\": [\"character\", \"object\"],\n  \"palette\": [\"pastel\", \"happy\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Object — Minimal Product Shot",
+      "name": "Isometric / Object — Minimal Product Shot",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"object\"],\n  \"paletteIndex\": 5,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"simple\", \"bare\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"isometric\"],\n  \"elements\": [\"object\"],\n  \"palette\": [\"cold\", \"5\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"simple\", \"bare\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
         }
       }
     },
     {
-      "name": "Geometric+Editorial / Icons — Magazine-Style Icons",
+      "name": "Geometric / Icons / Editorial — Magazine-Style Icons",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"geometric\", \"editorial\"],\n  \"elements\": [\"icons\"],\n  \"paletteIndex\": 6,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"blog\"],\n  \"moods\": [\"modern\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"geometric\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"editorial\"],\n  \"palette\": [\"red\", \"bright\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"blog\"],\n  \"moods\": [\"modern\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
         }
       }
     },
@@ -122,31 +122,31 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Spam detection and security monitoring\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"charts\", \"badges\"],\n  \"compositions\": [\"diagram\"],\n  \"paletteIndex\": 7,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"authoritative\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"asymmetric\"],\n  \"subjects\": [\"security\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Spam detection and security monitoring\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"charts\", \"badges\"],\n  \"compositions\": [\"diagram\"],\n  \"palette\": [\"green\", \"dark\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"authoritative\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"asymmetric\"],\n  \"subjects\": [\"security\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Cards / Split — Before/After Comparison",
+      "name": "Handdrawn / Cards / Split — Before/After Comparison",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Form submission before and after optimization\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"pills\"],\n  \"compositions\": [\"split\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\"],\n  \"layouts\": [\"symmetric\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Form submission before and after optimization\",\n  \"renderings\": [\"handdrawn\"],\n  \"elements\": [\"cards\", \"pills\"],\n  \"compositions\": [\"split\"],\n  \"palette\": [\"warm\", \"vintage\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\"],\n  \"layouts\": [\"symmetric\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Infographic / Cards+Charts+Tables / Showcase — Payment Dashboard",
+      "name": "Gradient / Cards+Charts+Tables / Showcase — Payment Dashboard",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Payment processing dashboard with transactions\",\n  \"renderings\": [\"infographic\"],\n  \"elements\": [\"cards\", \"charts\", \"tables\"],\n  \"compositions\": [\"showcase\"],\n  \"paletteIndex\": 8,\n  \"project\": \"SaaS billing platform\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"polished\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"layered\", \"asymmetric\"],\n  \"subjects\": [\"payment\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Payment processing dashboard with transactions\",\n  \"renderings\": [\"gradient\"],\n  \"elements\": [\"cards\", \"charts\", \"tables\"],\n  \"compositions\": [\"showcase\"],\n  \"palette\": [\"gold\"],\n  \"project\": \"SaaS billing platform\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"polished\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"layered\", \"asymmetric\"],\n  \"subjects\": [\"payment\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
@@ -158,79 +158,79 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Key features of a contact form plugin\",\n  \"renderings\": [\"lineart\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"collection\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"card\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"sparse\", \"few\"],\n  \"layouts\": [\"grid\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"thin\"]\n}"
+          "raw": "{\n  \"prompt\": \"Key features of a contact form plugin\",\n  \"renderings\": [\"lineart\"],\n  \"elements\": [\"icons\"],\n  \"compositions\": [\"collection\"],\n  \"palette\": [\"monochromatic\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"card\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"sparse\", \"few\"],\n  \"layouts\": [\"grid\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"thin\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Cards+Arrows+Badges / Flow — Content Publishing Pipeline",
+      "name": "3D / Cards+Arrows+Badges / Flow — Content Publishing Pipeline",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Content creation and publishing workflow\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"arrows\", \"badges\"],\n  \"compositions\": [\"flow\"],\n  \"paletteIndex\": 9,\n  \"project\": \"WordPress CMS\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"energetic\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"horizontal\"],\n  \"subjects\": [\"editor\"],\n  \"iconStyles\": [\"rounded\"]\n}"
+          "raw": "{\n  \"prompt\": \"Content creation and publishing workflow\",\n  \"renderings\": [\"3d\"],\n  \"elements\": [\"cards\", \"arrows\", \"badges\"],\n  \"compositions\": [\"flow\"],\n  \"palette\": [\"orange\", \"bright\"],\n  \"project\": \"WordPress CMS\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"energetic\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"horizontal\"],\n  \"subjects\": [\"editor\"],\n  \"iconStyles\": [\"rounded\"]\n}"
         }
       }
     },
     {
-      "name": "Bold / Character+Icons — Playful Onboarding",
+      "name": "Doodle / Character+Icons — Playful Onboarding",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Welcome to your new form builder\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"character\", \"icons\"],\n  \"paletteIndex\": 10,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"onboarding\"],\n  \"moods\": [\"fun\", \"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"rounded\"]\n}"
+          "raw": "{\n  \"prompt\": \"Welcome to your new form builder\",\n  \"renderings\": [\"doodle\"],\n  \"elements\": [\"character\", \"icons\"],\n  \"palette\": [\"kids\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"onboarding\"],\n  \"moods\": [\"fun\", \"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"rounded\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Browser+Cards / Showcase — WordPress Admin",
+      "name": "Risograph / Browser+Cards / Showcase — WordPress Admin",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"WordPress admin panel with form entries\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"browser\", \"cards\", \"pills\"],\n  \"compositions\": [\"showcase\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\", \"clean\"],\n  \"complexities\": [\"refined\", \"several\"],\n  \"layouts\": [\"layered\", \"offset\"],\n  \"subjects\": [\"wordpress\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"WordPress admin panel with form entries\",\n  \"renderings\": [\"risograph\"],\n  \"elements\": [\"browser\", \"cards\", \"pills\"],\n  \"compositions\": [\"showcase\"],\n  \"palette\": [\"vintage\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\", \"clean\"],\n  \"complexities\": [\"refined\", \"several\"],\n  \"layouts\": [\"layered\"],\n  \"subjects\": [\"wordpress\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Cards+Cursors / Abstract — Chat Support Feature",
+      "name": "Watercolor / Cards+Cursors / Abstract — Chat Support",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Live chat support widget\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"cursors\", \"badges\"],\n  \"compositions\": [\"abstract\"],\n  \"paletteIndex\": 11,\n  \"project\": \"Customer support SaaS\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"approachable\", \"warm\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"chat\"],\n  \"iconStyles\": [\"rounded\"]\n}"
+          "raw": "{\n  \"prompt\": \"Live chat support widget\",\n  \"renderings\": [\"watercolor\"],\n  \"elements\": [\"cards\", \"cursors\", \"badges\"],\n  \"compositions\": [\"abstract\"],\n  \"palette\": [\"pastel\", \"spring\"],\n  \"project\": \"Customer support SaaS\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"approachable\", \"warm\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"chat\"],\n  \"iconStyles\": [\"rounded\"]\n}"
         }
       }
     },
     {
-      "name": "Editorial / Icons+Arrows / Diagram — Settings Explained",
+      "name": "Pixel / Icons+Arrows / Diagram — Settings Explained",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Plugin settings and configuration options\",\n  \"renderings\": [\"editorial\"],\n  \"elements\": [\"icons\", \"arrows\"],\n  \"compositions\": [\"diagram\"],\n  \"paletteIndex\": 12,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"section\"],\n  \"moods\": [\"technical\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"grouped\"],\n  \"subjects\": [\"settings\"],\n  \"iconStyles\": [\"outlined\"]\n}"
+          "raw": "{\n  \"prompt\": \"Plugin settings and configuration options\",\n  \"renderings\": [\"pixel\"],\n  \"elements\": [\"icons\", \"arrows\"],\n  \"compositions\": [\"diagram\"],\n  \"palette\": [\"rainbow\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"section\"],\n  \"moods\": [\"technical\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"grouped\"],\n  \"subjects\": [\"settings\"],\n  \"iconStyles\": [\"outlined\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Object+Icons / Collection — Mobile App Features",
+      "name": "Cubist / Object+Icons / Collection — Mobile App Features",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Mobile form submission on the go\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"object\", \"icons\"],\n  \"compositions\": [\"collection\"],\n  \"paletteIndex\": 13,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"modern\", \"lively\"],\n  \"complexities\": [\"balanced\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"mobile\"],\n  \"iconStyles\": [\"duotone\"]\n}"
+          "raw": "{\n  \"prompt\": \"Mobile form submission on the go\",\n  \"renderings\": [\"cubist\"],\n  \"elements\": [\"object\", \"icons\"],\n  \"compositions\": [\"collection\"],\n  \"palette\": [\"pink\", \"bright\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"modern\", \"lively\"],\n  \"complexities\": [\"balanced\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"mobile\"],\n  \"iconStyles\": [\"duotone\"]\n}"
         }
       }
     },
@@ -242,7 +242,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Website traffic and conversion tracking\",\n  \"renderings\": [\"geometric\"],\n  \"elements\": [\"cards\", \"charts\"],\n  \"compositions\": [\"diagram\"],\n  \"paletteIndex\": 14,\n  \"project\": \"Website analytics tool\",\n  \"placements\": [\"header\"],\n  \"moods\": [\"precise\", \"technical\"],\n  \"complexities\": [\"informative\", \"several\"],\n  \"layouts\": [\"grid\"],\n  \"subjects\": [\"analytics\"],\n  \"iconStyles\": [\"sharp\"]\n}"
+          "raw": "{\n  \"prompt\": \"Website traffic and conversion tracking\",\n  \"renderings\": [\"geometric\"],\n  \"elements\": [\"cards\", \"charts\"],\n  \"compositions\": [\"diagram\"],\n  \"palette\": [\"blue\", \"cold\"],\n  \"project\": \"Website analytics tool\",\n  \"placements\": [\"header\"],\n  \"moods\": [\"precise\", \"technical\"],\n  \"complexities\": [\"informative\", \"several\"],\n  \"layouts\": [\"grid\"],\n  \"subjects\": [\"analytics\"],\n  \"iconStyles\": [\"sharp\"]\n}"
         }
       }
     },
@@ -254,19 +254,19 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Pricing tiers and plan comparison\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\"],\n  \"compositions\": [\"split\"],\n  \"paletteIndex\": 15,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"section\"],\n  \"moods\": [\"polished\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"symmetric\", \"horizontal\"],\n  \"subjects\": [\"payment\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Pricing tiers and plan comparison\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\"],\n  \"compositions\": [\"split\"],\n  \"palette\": [\"green\", \"bright\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"section\"],\n  \"moods\": [\"polished\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"symmetric\", \"horizontal\"],\n  \"subjects\": [\"payment\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
     {
-      "name": "Flat / Icons+Arrows / Flow — Security Pipeline",
+      "name": "Bold / Icons+Arrows / Flow — Security Pipeline",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Form submission security validation steps\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"icons\", \"arrows\", \"badges\"],\n  \"compositions\": [\"flow\"],\n  \"paletteIndex\": 16,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"authoritative\", \"techy\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"horizontal\"],\n  \"subjects\": [\"security\"],\n  \"iconStyles\": [\"bold\"]\n}"
+          "raw": "{\n  \"prompt\": \"Form submission security validation steps\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\", \"arrows\", \"badges\"],\n  \"compositions\": [\"flow\"],\n  \"palette\": [\"red\", \"dark\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"moods\": [\"authoritative\", \"techy\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"horizontal\"],\n  \"subjects\": [\"security\"],\n  \"iconStyles\": [\"bold\"]\n}"
         }
       }
     },
@@ -278,19 +278,19 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"No form submissions yet\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"character\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"empty\"],\n  \"moods\": [\"friendly\", \"inviting\"],\n  \"complexities\": [\"sparse\", \"bare\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"rounded\"]\n}"
+          "raw": "{\n  \"prompt\": \"No form submissions yet\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"character\"],\n  \"palette\": [\"pastel\", \"wedding\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"empty\"],\n  \"moods\": [\"friendly\", \"inviting\"],\n  \"complexities\": [\"sparse\", \"bare\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"rounded\"]\n}"
         }
       }
     },
     {
-      "name": "Infographic / Cards+Tables+Pills / Showcase — Email Campaign Dashboard",
+      "name": "Flat / Cards+Tables+Pills / Showcase — Email Campaign Dashboard",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Email campaign performance dashboard\",\n  \"renderings\": [\"infographic\"],\n  \"elements\": [\"cards\", \"tables\", \"pills\", \"charts\"],\n  \"compositions\": [\"showcase\"],\n  \"paletteIndex\": 17,\n  \"project\": \"Email marketing platform\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"corporate\", \"polished\"],\n  \"complexities\": [\"dense\", \"many\"],\n  \"layouts\": [\"layered\", \"overlapping\"],\n  \"subjects\": [\"email\"],\n  \"iconStyles\": [\"filled\"]\n}"
+          "raw": "{\n  \"prompt\": \"Email campaign performance dashboard\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"tables\", \"pills\", \"charts\"],\n  \"compositions\": [\"showcase\"],\n  \"palette\": [\"blue\", \"gradient\"],\n  \"project\": \"Email marketing platform\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"corporate\", \"polished\"],\n  \"complexities\": [\"dense\", \"many\"],\n  \"layouts\": [\"layered\", \"overlapping\"],\n  \"subjects\": [\"email\"],\n  \"iconStyles\": [\"filled\"]\n}"
         }
       }
     },
@@ -302,19 +302,19 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"cursors\", \"pills\"],\n  \"paletteIndex\": 0,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"thumbnail\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"bare\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"cursors\", \"pills\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"thumbnail\"],\n  \"moods\": [\"clean\"],\n  \"complexities\": [\"bare\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"minimal\"]\n}"
         }
       }
     },
     {
-      "name": "Bold / Icons+Arrows / Orbit — Integration Ecosystem (Energetic)",
+      "name": "Bold / Icons+Arrows / Orbit — Integration Ecosystem",
       "request": {
         "method": "POST",
         "url": "{{base_url}}/generate",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"prompt\": \"Connected ecosystem of third-party services\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\", \"arrows\"],\n  \"compositions\": [\"orbit\"],\n  \"paletteIndex\": 18,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"energetic\", \"lively\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\", \"symmetric\"],\n  \"subjects\": [\"integration\"],\n  \"iconStyles\": [\"bold\"]\n}"
+          "raw": "{\n  \"prompt\": \"Connected ecosystem of third-party services\",\n  \"renderings\": [\"bold\"],\n  \"elements\": [\"icons\", \"arrows\"],\n  \"compositions\": [\"orbit\"],\n  \"palette\": [\"summer\"],\n  \"project\": \"{{project}}\",\n  \"placements\": [\"hero\"],\n  \"moods\": [\"energetic\", \"lively\"],\n  \"complexities\": [\"balanced\", \"several\"],\n  \"layouts\": [\"centered\", \"symmetric\"],\n  \"subjects\": [\"integration\"],\n  \"iconStyles\": [\"bold\"]\n}"
         }
       }
     },
@@ -327,6 +327,42 @@
         "body": {
           "mode": "raw",
           "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"project\": \"{{project}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Exact Palette by ID",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\"],\n  \"palette\": \"10618041\",\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"subjects\": [\"form\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Expand — Rendering Comparison (flat vs clay vs 3d)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"isolated bonsai tree\",\n  \"renderings\": [\"flat\", \"clay\", \"3d\"],\n  \"palette\": [\"nature\", \"5\"],\n  \"expand\": true,\n  \"placements\": [\"feature\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "Expand — Rendering x Complexity Grid (2x2)",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/generate",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"{{prompt}}\",\n  \"renderings\": [\"flat\", \"bold\"],\n  \"complexities\": [\"simple\", \"intricate\"],\n  \"palette\": [\"blue\", \"pastel\"],\n  \"expand\": true,\n  \"project\": \"{{project}}\",\n  \"placements\": [\"feature\"],\n  \"subjects\": [\"form\"]\n}"
         }
       }
     }
