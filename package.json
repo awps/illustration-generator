@@ -1,17 +1,19 @@
 {
-  "name": "illustrations-generator",
-  "version": "1.0.0",
+  "name": "eleming",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
-  },
-  "dependencies": {
-    "@google/genai": "^1.0.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.0.0",
-    "typescript": "^5.5.3",
-    "wrangler": "^4.0.0"
+    "dev:api": "npm run dev -w @eleming/api",
+    "dev:app": "npm run dev -w @eleming/app",
+    "dev:site": "npm run dev -w @eleming/site",
+    "test": "npm run test --workspaces --if-present",
+    "test:run": "npm run test:run --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "docker": "op run --env-file=.env.tpl -- docker compose down && op run --env-file=.env.tpl -- docker compose up -d --build",
+    "docker:reset-db": "op run --env-file=.env.tpl -- docker compose down && docker volume rm zerowp-eleming-cms_d1_data && op run --env-file=.env.tpl -- docker compose up -d --build",
+    "docker:trust-ca": "op run --env-file=.env.tpl -- docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt docker/caddy-root-ca.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain docker/caddy-root-ca.crt && echo 'Caddy root CA trusted'"
   }
 }

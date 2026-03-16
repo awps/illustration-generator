@@ -1,0 +1,82 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - app
+      - site
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: >
+      sh -c "printenv | grep -E '^(COOKIE_DOMAIN|APP_ORIGIN|MAGIC_TOKEN_SECRET|TURSO_ORG|TURSO_GROUP|TURSO_API_TOKEN|SITE_BASE_DOMAIN)=' > .env
+      && npx wrangler d1 execute eleming-platform --local --persist-to /app/d1-state --command=\"SELECT 1 FROM sites LIMIT 1\" 2>/dev/null
+      && echo 'DB already initialized, skipping migrations'
+      || { echo 'Running migrations...' && for f in /app/packages/db/drizzle/platform/*.sql; do npx wrangler d1 execute eleming-platform --local --persist-to /app/d1-state --file=\"$$f\"; done; }
+      && npx wrangler dev --port 8787 --ip 0.0.0.0 --persist-to /app/d1-state"
+    working_dir: /app/apps/api
+    environment:
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+      - APP_ORIGIN=${APP_ORIGIN}
+      - MAGIC_TOKEN_SECRET=${MAGIC_TOKEN_SECRET}
+      - TURSO_ORG=${TURSO_ORG}
+      - TURSO_GROUP=${TURSO_GROUP}
+      - TURSO_API_TOKEN=${TURSO_API_TOKEN}
+      - SITE_BASE_DOMAIN=${SITE_BASE_DOMAIN}
+    volumes:
+      - ./packages:/app/packages:ro
+      - ./apps/api:/app/apps/api
+      - /app/apps/api/node_modules
+      - d1_data:/app/d1-state
+    expose:
+      - "8787"
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: >
+      sh -c "printenv | grep -E '^(API_URL|API_INTERNAL_URL)=' > .env
+      && npx vite build && npx wrangler dev --port 8788 --ip 0.0.0.0"
+    working_dir: /app/apps/app
+    environment:
+      - API_URL=${API_URL}
+      - API_INTERNAL_URL=${API_INTERNAL_URL}
+    volumes:
+      - ./packages:/app/packages:ro
+      - ./apps/app:/app/apps/app
+      - /app/apps/app/node_modules
+    expose:
+      - "8788"
+
+  site:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: >
+      sh -c "printenv | grep -E '^(MAGIC_TOKEN_SECRET)=' > .env
+      && npx wrangler dev --port 8789 --ip 0.0.0.0 --persist-to /app/d1-state"
+    working_dir: /app/apps/site
+    environment:
+      - MAGIC_TOKEN_SECRET=${MAGIC_TOKEN_SECRET}
+    volumes:
+      - ./packages:/app/packages:ro
+      - ./apps/site:/app/apps/site
+      - /app/apps/site/node_modules
+      - d1_data:/app/d1-state
+    expose:
+      - "8789"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  d1_data:

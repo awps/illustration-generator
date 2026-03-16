@@ -1,0 +1,22 @@
+{
+  "name": "eleming-app",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-02-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    { "pattern": "app.eleming.com/*", "zone_name": "eleming.com" }
+  ],
+  "assets": {
+    "directory": "./dist/client"
+  },
+  "vars": {
+    "API_URL": "https://api.eleming.com"
+  },
+  "services": [
+    { "binding": "API", "service": "eleming-api" }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

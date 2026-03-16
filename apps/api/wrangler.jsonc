@@ -1,0 +1,21 @@
+{
+  "name": "eleming-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-02-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [
+    { "pattern": "api.eleming.com/*", "zone_name": "eleming.com" }
+  ],
+  "vars": {
+    "COOKIE_DOMAIN": ".eleming.com",
+    "APP_ORIGIN": "https://app.eleming.com",
+    "SITE_BASE_DOMAIN": "eleming.io"
+  },
+  "d1_databases": [
+    { "binding": "PLATFORM_DB", "database_name": "eleming-platform", "database_id": "placeholder" }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

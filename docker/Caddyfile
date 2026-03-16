@@ -1,0 +1,19 @@
+{
+	local_certs
+}
+
+api.eleming.kom {
+	reverse_proxy api:8787
+}
+
+app.eleming.kom {
+	reverse_proxy app:8788
+}
+
+site.eleming.kom {
+	reverse_proxy site:8789
+}
+
+*.eleming.yo {
+	reverse_proxy site:8789
+}

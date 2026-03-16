@@ -1,0 +1,19 @@
+{
+  "name": "@eleming/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./platform": "./src/platform-schema.ts",
+    "./site": "./src/site-schema.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1",
+    "uuidv7": "^1.1.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9",
+    "typescript": "^5.9.3"
+  }
+}
