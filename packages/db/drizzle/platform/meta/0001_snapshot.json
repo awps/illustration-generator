@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f69be60f-df2a-48ba-96e6-f1279e1165db",
-  "prevId": "0cd15f71-5c41-4b38-a14c-510579fa57af",
+  "id": "c0943356-0f22-4f4f-9c3c-6a4ca7b3be58",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "domains": {
-      "name": "domains",
+    "generations": {
+      "name": "generations",
       "columns": {
         "id": {
           "name": "id",
@@ -14,33 +14,102 @@
           "notNull": true,
           "autoincrement": false
         },
-        "domain": {
-          "name": "domain",
+        "project_id": {
+          "name": "project_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "site_id": {
-          "name": "site_id",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "is_primary": {
-          "name": "is_primary",
-          "type": "integer",
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": true
+          "notNull": true,
+          "autoincrement": false
         },
-        "locale": {
-          "name": "locale",
+        "palette_id": {
+          "name": "palette_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "renderings": {
+          "name": "renderings",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "elements": {
+          "name": "elements",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "compositions": {
+          "name": "compositions",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "placements": {
+          "name": "placements",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "moods": {
+          "name": "moods",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "complexities": {
+          "name": "complexities",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "layouts": {
+          "name": "layouts",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "subjects": {
+          "name": "subjects",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "icon_styles": {
+          "name": "icon_styles",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "storage_path": {
+          "name": "storage_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -52,28 +121,41 @@
         }
       },
       "indexes": {
-        "domains_domain_unique": {
-          "name": "domains_domain_unique",
+        "idx_generations_project_id": {
+          "name": "idx_generations_project_id",
           "columns": [
-            "domain"
+            "project_id"
           ],
-          "isUnique": true
+          "isUnique": false
         },
-        "idx_domains_site_id": {
-          "name": "idx_domains_site_id",
+        "idx_generations_user_id": {
+          "name": "idx_generations_user_id",
           "columns": [
-            "site_id"
+            "user_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "domains_site_id_sites_id_fk": {
-          "name": "domains_site_id_sites_id_fk",
-          "tableFrom": "domains",
-          "tableTo": "sites",
+        "generations_project_id_projects_id_fk": {
+          "name": "generations_project_id_projects_id_fk",
+          "tableFrom": "generations",
+          "tableTo": "projects",
           "columnsFrom": [
-            "site_id"
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "generations_user_id_platform_users_id_fk": {
+          "name": "generations_user_id_platform_users_id_fk",
+          "tableFrom": "generations",
+          "tableTo": "platform_users",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -82,6 +164,58 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "palettes": {
+      "name": "palettes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "colors": {
+          "name": "colors",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "total_colors": {
+          "name": "total_colors",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "predominant_color": {
+          "name": "predominant_color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "style": {
+          "name": "style",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -256,8 +390,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "sites": {
-      "name": "sites",
+    "projects": {
+      "name": "projects",
       "columns": {
         "id": {
           "name": "id",
@@ -266,26 +400,32 @@
           "notNull": true,
           "autoincrement": false
         },
-        "active": {
-          "name": "active",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": true
-        },
-        "turso_url": {
-          "name": "turso_url",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "turso_auth_token": {
-          "name": "turso_auth_token",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {
@@ -303,8 +443,30 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "idx_projects_user_id": {
+          "name": "idx_projects_user_id",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "projects_user_id_platform_users_id_fk": {
+          "name": "projects_user_id_platform_users_id_fk",
+          "tableFrom": "projects",
+          "tableTo": "platform_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

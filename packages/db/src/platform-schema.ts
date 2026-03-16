@@ -2,29 +2,58 @@ import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
 import { uuidv7 } from 'uuidv7'
 
 // =====================
-// Sites & Domains
+// Projects
 // =====================
 
-export const sites = sqliteTable('sites', {
+export const projects = sqliteTable('projects', {
   id: text('id').primaryKey().$defaultFn(() => uuidv7()),
+  userId: text('user_id').notNull().references(() => platformUsers.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  active: integer('active', { mode: 'boolean' }).default(true),
-  tursoDbName: text('turso_db_name').notNull(),
-  tursoUrl: text('turso_url').notNull(),
-  tursoAuthToken: text('turso_auth_token').notNull(),
+  description: text('description'),
+  url: text('url'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (table) => [
+  index('idx_projects_user_id').on(table.userId),
+])
+
+// =====================
+// Palettes
+// =====================
+
+export const palettes = sqliteTable('palettes', {
+  id: text('id').primaryKey(),
+  colors: text('colors').notNull(),
+  totalColors: integer('total_colors').notNull(),
+  predominantColor: text('predominant_color').notNull(),
+  style: text('style').notNull(),
+  topic: text('topic').notNull(),
 })
 
-export const domains = sqliteTable('domains', {
+// =====================
+// Generations
+// =====================
+
+export const generations = sqliteTable('generations', {
   id: text('id').primaryKey().$defaultFn(() => uuidv7()),
-  domain: text('domain').notNull().unique(),
-  siteId: text('site_id').notNull().references(() => sites.id, { onDelete: 'cascade' }),
-  isPrimary: integer('is_primary', { mode: 'boolean' }).default(true),
-  locale: text('locale'),
+  projectId: text('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => platformUsers.id, { onDelete: 'cascade' }),
+  prompt: text('prompt').notNull(),
+  paletteId: text('palette_id'),
+  renderings: text('renderings'),
+  elements: text('elements'),
+  compositions: text('compositions'),
+  placements: text('placements'),
+  moods: text('moods'),
+  complexities: text('complexities'),
+  layouts: text('layouts'),
+  subjects: text('subjects'),
+  iconStyles: text('icon_styles'),
+  storagePath: text('storage_path').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 }, (table) => [
-  index('idx_domains_site_id').on(table.siteId),
+  index('idx_generations_project_id').on(table.projectId),
+  index('idx_generations_user_id').on(table.userId),
 ])
 
 // =====================
