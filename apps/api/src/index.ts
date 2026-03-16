@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import type { Env } from './types'
+import { platformAuth } from './middleware/auth'
 import { auth } from './routes/auth'
-import { sitesRouter } from './routes/sites'
-import { domainsRouter } from './routes/domains'
-import { magic } from './routes/magic'
+import { projectsRouter } from './routes/projects'
+import { generateRouter } from './routes/generate'
+import { palettesRouter } from './routes/palettes'
 import { user } from './routes/user'
-import { languagesRouter } from './routes/languages'
 
 const app = new Hono<Env>()
 
@@ -24,10 +24,10 @@ app.get('/v1/health', (c) => c.json({ status: 'ok' }))
 app.route('/v1/auth', auth)
 
 // Authenticated routes
-app.route('/v1/sites', sitesRouter)
-app.route('/v1/sites/:siteId/domains', domainsRouter)
-app.route('/v1/sites/:siteId/magic-token', magic)
-app.route('/v1/sites/:siteId/languages', languagesRouter)
+app.use('/v1/*', platformAuth)
+app.route('/v1/projects', projectsRouter)
+app.route('/v1/generate', generateRouter)
+app.route('/v1/palettes', palettesRouter)
 app.route('/v1/user', user)
 
 export default app
