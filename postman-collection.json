@@ -1,0 +1,278 @@
+{
+  "info": {
+    "name": "Illustragen API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://api-imagen.publingo.kom" },
+    { "key": "project_id", "value": "" },
+    { "key": "generation_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/user"
+          }
+        },
+        {
+          "name": "Update User Name",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/v1/user",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "List Projects",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/projects"
+          }
+        },
+        {
+          "name": "Create Project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.project && json.project.id) {",
+                  "  pm.collectionVariables.set('project_id', json.project.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My WordPress Plugin\",\n  \"description\": \"WordPress plugin for building contact forms\",\n  \"url\": \"https://example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Project",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/projects/{{project_id}}"
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/v1/projects/{{project_id}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Project Name\",\n  \"description\": \"Updated description\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v1/projects/{{project_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Generations",
+      "item": [
+        {
+          "name": "Generate — Flat / Cards / Abstract",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.images && json.images[0] && json.images[0].generationId) {",
+                  "  pm.collectionVariables.set('generation_id', json.images[0].generationId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"WordPress form builder\",\n  \"renderings\": [\"flat\"],\n  \"elements\": [\"cards\", \"badges\", \"cursors\"],\n  \"compositions\": [\"abstract\"],\n  \"palette\": [\"blue\", \"pastel\"],\n  \"placements\": [\"feature\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"balanced\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"],\n  \"iconStyles\": [\"filled\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate — Clay / Character / Hero",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Friendly form builder assistant\",\n  \"renderings\": [\"clay\"],\n  \"elements\": [\"character\", \"object\"],\n  \"palette\": [\"pastel\", \"happy\"],\n  \"placements\": [\"hero\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\", \"few\"],\n  \"layouts\": [\"centered\"],\n  \"subjects\": [\"form\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate — 3D / Browser / Showcase",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Analytics dashboard with traffic metrics\",\n  \"renderings\": [\"3d\"],\n  \"elements\": [\"browser\", \"cards\", \"charts\"],\n  \"compositions\": [\"showcase\"],\n  \"palette\": [\"blue\", \"dark\"],\n  \"placements\": [\"hero\"],\n  \"moods\": [\"professional\"],\n  \"complexities\": [\"intricate\", \"many\"],\n  \"layouts\": [\"layered\"],\n  \"subjects\": [\"analytics\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate — Doodle / Onboarding",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Welcome to your new form builder\",\n  \"renderings\": [\"doodle\"],\n  \"elements\": [\"character\", \"icons\"],\n  \"palette\": [\"kids\"],\n  \"placements\": [\"onboarding\"],\n  \"moods\": [\"fun\", \"friendly\"],\n  \"complexities\": [\"simple\"],\n  \"layouts\": [\"centered\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate — Expand (flat vs clay vs isometric)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Isolated bonsai tree\",\n  \"renderings\": [\"flat\", \"clay\", \"isometric\"],\n  \"palette\": [\"nature\", \"5\"],\n  \"expand\": true,\n  \"placements\": [\"feature\"],\n  \"moods\": [\"friendly\"],\n  \"complexities\": [\"simple\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Generate — Minimal (random everything)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generate",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"WordPress form builder\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Generations",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/projects/{{project_id}}/generations"
+          }
+        },
+        {
+          "name": "Delete Generation",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v1/generations/{{generation_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Palettes",
+      "item": [
+        {
+          "name": "List Palettes (all)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/palettes"
+          }
+        },
+        {
+          "name": "Filter Palettes — Blue + Pastel",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/palettes?color=blue&style=pastel"
+          }
+        },
+        {
+          "name": "Filter Palettes — 5 Colors + Warm",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/palettes?totalColors=5&style=warm"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v1/health"
+          }
+        }
+      ]
+    }
+  ]
+}
