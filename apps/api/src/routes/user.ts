@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq } from 'drizzle-orm'
-import { platformUsers } from '@eleming/db/platform'
+import { platformUsers } from '@illustragen/db/platform'
 import { platformAuth } from '../middleware/auth'
 import type { Env } from '../types'
 

@@ -1,13 +1,16 @@
+export interface GenerationEnv {
+  IMAGES_BUCKET: R2Bucket
+  GEMINI_API_KEY: string
+  CLOUDFLARE_ACCOUNT_ID: string
+  AI_GATEWAY_ID: string
+  IMAGES_DOMAIN: string
+}
+
 export type Env = {
-  Bindings: {
+  Bindings: GenerationEnv & {
     PLATFORM_DB: D1Database
-    MAGIC_TOKEN_SECRET: string
     COOKIE_DOMAIN: string
     APP_ORIGIN: string
-    TURSO_ORG: string
-    TURSO_GROUP: string
-    TURSO_API_TOKEN: string
-    SITE_BASE_DOMAIN: string
   }
   Variables: {
     userId: string

@@ -15,7 +15,7 @@ import {
 } from "./styles";
 import { type ResolvedPalette, pickBackgroundColor } from "./palettes";
 import { generateImage, type ReferenceImage } from "./ai/image-generator";
-import { generateId, buildPublicUrl, uploadToR2 } from "./storage/r2";
+import { buildPublicUrl, uploadToR2 } from "./storage/r2";
 
 export class PipelineError extends Error {
   constructor(
@@ -55,8 +55,8 @@ export interface PipelineOptions {
   palette: ResolvedPalette;
   project?: string;
   referenceImage?: ReferenceImage;
-  storagePath?: string;
-  generationId?: string;
+  storagePath: string;
+  generationId: string;
   renderings?: Rendering[];
   elements?: IllustrationElement[];
   compositions?: Composition[];
@@ -80,8 +80,8 @@ export async function runPipeline(
     },
   });
 
-  const generationId = options.generationId ?? generateId();
-  const basePath = options.storagePath ?? `generations/${generationId}/`;
+  const generationId = options.generationId;
+  const basePath = options.storagePath;
   const rawKey = `${basePath}raw.png`;
   const transparentKey = `${basePath}transparent.png`;
 

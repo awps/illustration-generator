@@ -1,8 +1,8 @@
 import { createMiddleware } from 'hono/factory'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq } from 'drizzle-orm'
-import { platformSessions, platformUsers } from '@eleming/db/platform'
-import { parseCookies } from '@eleming/shared'
+import { platformSessions, platformUsers } from '@illustragen/db/platform'
+import { parseCookies } from '@illustragen/shared'
 import type { Env } from '../types'
 
 export const platformAuth = createMiddleware<Env>(async (c, next) => {
