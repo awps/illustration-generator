@@ -1,19 +1,19 @@
 {
-  "name": "eleming-app",
+  "name": "illustragen-app",
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-02-22",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
-    { "pattern": "app.eleming.com/*", "zone_name": "eleming.com" }
+    { "pattern": "imagen.publingo.com/*", "zone_name": "publingo.com" }
   ],
   "assets": {
     "directory": "./dist/client"
   },
   "vars": {
-    "API_URL": "https://api.eleming.com"
+    "API_URL": "https://api-imagen.publingo.com"
   },
   "services": [
-    { "binding": "API", "service": "eleming-api" }
+    { "binding": "API", "service": "illustragen-api" }
   ],
   "observability": {
     "enabled": true,

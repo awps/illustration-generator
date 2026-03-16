@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { parseCookies } from '@eleming/shared'
+import { parseCookies } from '@illustragen/shared'
 import { loginPage } from './templates/login'
 import { registerPage } from './templates/register'
 import { shellPage } from './templates/shell'
@@ -13,14 +13,15 @@ type Env = {
   }
 }
 
-/** In Docker, Service Bindings don't work across containers.
- *  When API_INTERNAL_URL is set, use direct HTTP instead. */
-function fetchAPI(env: Env['Bindings'], url: string, init?: RequestInit): Promise<Response> {
+/** Call the API worker. Accepts relative paths like '/auth/login'.
+ *  In Docker, Service Bindings don't work across containers —
+ *  when API_INTERNAL_URL is set, use direct HTTP instead. */
+function fetchAPI(env: Env['Bindings'], path: string, init?: RequestInit): Promise<Response> {
+  const fullPath = `/v1${path}`
   if (env.API_INTERNAL_URL) {
-    const path = new URL(url).pathname
-    return fetch(`${env.API_INTERNAL_URL}${path}`, init)
+    return fetch(`${env.API_INTERNAL_URL}${fullPath}`, init)
   }
-  return env.API.fetch(url, init)
+  return env.API.fetch(`${env.API_URL}${fullPath}`, init)
 }
 
 const app = new Hono<Env>()
@@ -40,7 +41,7 @@ app.post('/auth/login', async (c) => {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const res = await fetchAPI(c.env,'https://api.eleming.com/v1/auth/login', {
+  const res = await fetchAPI(c.env, '/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -67,7 +68,7 @@ app.post('/auth/register', async (c) => {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const res = await fetchAPI(c.env,'https://api.eleming.com/v1/auth/register', {
+  const res = await fetchAPI(c.env, '/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password }),
@@ -89,7 +90,7 @@ app.post('/auth/register', async (c) => {
 // POST /auth/logout
 app.post('/auth/logout', async (c) => {
   const cookie = c.req.header('cookie') ?? ''
-  await fetchAPI(c.env,'https://api.eleming.com/v1/auth/logout', {
+  await fetchAPI(c.env, '/auth/logout', {
     method: 'POST',
     headers: { 'Cookie': cookie },
   })
@@ -125,7 +126,7 @@ app.all('*', async (c) => {
   }
 
   // Validate session by calling API
-  const res = await fetchAPI(c.env,'https://api.eleming.com/v1/user', {
+  const res = await fetchAPI(c.env, '/user', {
     headers: { 'Cookie': cookieHeader },
   })
 
