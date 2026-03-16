@@ -5,6 +5,7 @@ import { platformAuth } from './middleware/auth'
 import { auth } from './routes/auth'
 import { projectsRouter } from './routes/projects'
 import { generateRouter } from './routes/generate'
+import { generationsRouter } from './routes/generations'
 import { palettesRouter } from './routes/palettes'
 import { user } from './routes/user'
 
@@ -27,6 +28,7 @@ app.route('/v1/auth', auth)
 app.use('/v1/*', platformAuth)
 app.route('/v1/projects', projectsRouter)
 app.route('/v1/generate', generateRouter)
+app.route('/v1', generationsRouter)
 app.route('/v1/palettes', palettesRouter)
 app.route('/v1/user', user)
 
