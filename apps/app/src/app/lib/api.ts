@@ -1,4 +1,4 @@
-const apiUrl = (window as any).__CONFIG__?.apiUrl ?? 'https://api-imagen.publingo.com'
+const apiUrl = (window as any).__CONFIG__?.apiUrl ?? 'https://api-igen.publingo.com'
 
 export function apiFetch(path: string, init?: RequestInit) {
   return fetch(`${apiUrl}${path}`, { credentials: 'include', ...init })

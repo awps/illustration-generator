@@ -1,12 +1,22 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, type MutableRefObject } from 'react'
 import { useParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Trash2Icon, ImageIcon } from 'lucide-react'
 import { apiFetch, type Generation } from '@/lib/api'
+import { GenerationPlaceholder } from '@/components/generation-placeholder'
+import type { PendingGeneration } from '@/App'
 
 const IMAGES_DOMAIN = (window as any).__CONFIG__?.imagesDomain ?? 'imagen.publingo.com'
 
-export function ProjectDashboard() {
+export function ProjectDashboard({
+  pendingGenerations,
+  completedGenerations,
+  onRefreshRef,
+}: {
+  pendingGenerations: PendingGeneration[]
+  completedGenerations: Generation[]
+  onRefreshRef: MutableRefObject<() => void>
+}) {
   const { projectId } = useParams()
   const [generations, setGenerations] = useState<Generation[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,6 +39,10 @@ export function ProjectDashboard() {
     loadGenerations()
   }, [loadGenerations])
 
+  useEffect(() => {
+    onRefreshRef.current = loadGenerations
+  }, [loadGenerations, onRefreshRef])
+
   const deleteGeneration = async (id: string) => {
     const res = await apiFetch(`/v1/generations/${id}`, { method: 'DELETE' })
     if (res.ok) {
@@ -36,7 +50,20 @@ export function ProjectDashboard() {
     }
   }
 
-  if (loading) {
+  // Merge completed (from generate) with loaded (from API), deduplicate
+  const allGenerations = [...completedGenerations, ...generations]
+  const seen = new Set<string>()
+  const uniqueGenerations = allGenerations.filter(g => {
+    if (seen.has(g.id)) return false
+    seen.add(g.id)
+    return true
+  })
+
+  const hasPending = pendingGenerations.length > 0
+  const hasGenerations = uniqueGenerations.length > 0
+  const isEmpty = !hasPending && !hasGenerations && !loading
+
+  if (loading && !hasPending && !hasGenerations) {
     return (
       <div className="flex flex-1 items-center justify-center text-muted-foreground">
         Loading...
@@ -44,7 +71,7 @@ export function ProjectDashboard() {
     )
   }
 
-  if (generations.length === 0) {
+  if (isEmpty) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
         <div className="flex size-12 items-center justify-center rounded-xl bg-muted">
@@ -59,7 +86,11 @@ export function ProjectDashboard() {
 
   return (
     <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
-      {generations.map((gen) => {
+      {pendingGenerations.map((p) => (
+        <GenerationPlaceholder key={p.id} prompt={p.prompt} error={p.error} />
+      ))}
+
+      {uniqueGenerations.map((gen) => {
         const renderings = gen.renderings ? JSON.parse(gen.renderings) as string[] : []
         const imgUrl = `https://${IMAGES_DOMAIN}/${gen.storagePath}transparent.png`
         return (

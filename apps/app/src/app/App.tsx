@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
@@ -7,7 +7,14 @@ import { SidebarLeft } from '@/components/sidebar-left'
 import { SidebarRight } from '@/components/sidebar-right'
 import { ProjectDashboard } from '@/pages/project-dashboard'
 import { NoProject } from '@/pages/no-project'
-import { apiFetch, type User, type Project } from '@/lib/api'
+import { apiFetch, type User, type Project, type Generation } from '@/lib/api'
+import type { GenerateRequest } from '@/components/generator-form'
+
+export interface PendingGeneration {
+  id: string
+  prompt: string
+  error?: string
+}
 
 function ProjectLayout({
   user,
@@ -20,6 +27,56 @@ function ProjectLayout({
 }) {
   const { projectId } = useParams()
   const currentProject = projects.find(p => p.id === projectId)
+  const [pendingGenerations, setPendingGenerations] = useState<PendingGeneration[]>([])
+  const [completedGenerations, setCompletedGenerations] = useState<Generation[]>([])
+  const [generating, setGenerating] = useState(false)
+  const refreshRef = useRef<() => void>(() => {})
+
+  // Reset state when switching projects
+  useEffect(() => {
+    setPendingGenerations([])
+    setCompletedGenerations([])
+  }, [projectId])
+
+  const onGenerate = async (request: GenerateRequest) => {
+    if (!projectId) return
+    setGenerating(true)
+
+    const pendingIds = Array.from({ length: request.count }, (_, i) => `pending-${Date.now()}-${i}`)
+    const pending: PendingGeneration[] = pendingIds.map(id => ({ id, prompt: request.prompt }))
+    setPendingGenerations(prev => [...pending, ...prev])
+
+    try {
+      const res = await apiFetch(`/v1/projects/${projectId}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        const errMsg = data.error ?? 'Generation failed'
+        setPendingGenerations(prev =>
+          prev.map(p => pendingIds.includes(p.id) ? { ...p, error: errMsg } : p)
+        )
+        return
+      }
+
+      const data = await res.json()
+      const newGenerations = data.images as Generation[]
+
+      setPendingGenerations(prev => prev.filter(p => !pendingIds.includes(p.id)))
+      setCompletedGenerations(prev => [...newGenerations, ...prev])
+
+      refreshRef.current()
+    } catch {
+      setPendingGenerations(prev =>
+        prev.map(p => pendingIds.includes(p.id) ? { ...p, error: 'Network error' } : p)
+      )
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -44,9 +101,13 @@ function ProjectLayout({
             </Breadcrumb>
           </div>
         </header>
-        <ProjectDashboard />
+        <ProjectDashboard
+          pendingGenerations={pendingGenerations}
+          completedGenerations={completedGenerations}
+          onRefreshRef={refreshRef}
+        />
       </SidebarInset>
-      <SidebarRight user={user} />
+      <SidebarRight user={user} onGenerate={onGenerate} generating={generating} />
     </SidebarProvider>
   )
 }
