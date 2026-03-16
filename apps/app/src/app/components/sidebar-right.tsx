@@ -1,47 +1,16 @@
-import * as React from "react"
-
-import { Calendars } from "@/components/calendars"
-import { DatePicker } from "@/components/date-picker"
-import { NavUser } from "@/components/nav-user"
+import * as React from 'react'
+import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-  SidebarSeparator,
-} from "@/components/ui/sidebar"
-import { PlusIcon } from "lucide-react"
-
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  calendars: [
-    {
-      name: "My Calendars",
-      items: ["Personal", "Work", "Family"],
-    },
-    {
-      name: "Favorites",
-      items: ["Holidays", "Birthdays"],
-    },
-    {
-      name: "Other",
-      items: ["Travel", "Reminders", "Deadlines"],
-    },
-  ],
-}
+} from '@/components/ui/sidebar'
+import type { User } from '@/lib/api'
 
 export function SidebarRight({
+  user,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: React.ComponentProps<typeof Sidebar> & { user: User }) {
   return (
     <Sidebar
       collapsible="none"
@@ -49,24 +18,13 @@ export function SidebarRight({
       {...props}
     >
       <SidebarHeader className="h-16 border-b border-sidebar-border">
-        <NavUser user={data.user} />
+        <NavUser user={{ ...user, avatar: '' }} />
       </SidebarHeader>
       <SidebarContent>
-        <DatePicker />
-        <SidebarSeparator className="mx-0" />
-        <Calendars calendars={data.calendars} />
+        <div className="p-4 text-sm text-muted-foreground">
+          Generator form coming in next update.
+        </div>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <PlusIcon
-              />
-              <span>New Calendar</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }
