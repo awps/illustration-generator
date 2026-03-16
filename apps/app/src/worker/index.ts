@@ -10,6 +10,7 @@ type Env = {
     ASSETS: Fetcher
     API_URL: string
     API_INTERNAL_URL?: string
+    IMAGES_DOMAIN: string
   }
 }
 
@@ -135,7 +136,7 @@ app.all('*', async (c) => {
   }
 
   // Serve SPA shell for all authenticated routes
-  return c.html(shellPage(c.env.API_URL))
+  return c.html(shellPage(c.env.API_URL, c.env.IMAGES_DOMAIN))
 })
 
 export default app

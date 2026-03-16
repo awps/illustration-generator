@@ -10,7 +10,8 @@
     "directory": "./dist/client"
   },
   "vars": {
-    "API_URL": "https://api-imagen.publingo.com"
+    "API_URL": "https://api-imagen.publingo.com",
+    "IMAGES_DOMAIN": "imagen.publingo.com"
   },
   "services": [
     { "binding": "API", "service": "illustragen-api" }
