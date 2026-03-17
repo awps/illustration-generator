@@ -2,14 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { StyleSection } from '@/components/style-section'
+import { PaletteBrowser } from '@/components/palette-browser'
 import { STYLE_OPTIONS, STYLE_LABELS, type StyleCategory } from '@/lib/style-options'
-import { SparklesIcon } from 'lucide-react'
+import { SparklesIcon, PaletteIcon, XIcon } from 'lucide-react'
 
 export interface GenerateRequest {
   prompt: string
-  palette?: string[]
+  palette?: string
   count: number
   renderings?: string[]
   elements?: string[]
@@ -22,11 +22,14 @@ export interface GenerateRequest {
   placements?: string[]
 }
 
+interface SelectedPalette {
+  id: string
+  colors: string[]
+}
+
 interface SavedFilters {
   selections: Record<StyleCategory, string[]>
-  paletteColor: string
-  paletteStyle: string
-  paletteTopic: string
+  selectedPalette: SelectedPalette | null
   count: number
 }
 
@@ -43,12 +46,12 @@ const emptySelections: Record<StyleCategory, string[]> = {
 }
 
 function loadFilters(projectId?: string): SavedFilters {
-  if (!projectId) return { selections: emptySelections, paletteColor: '', paletteStyle: '', paletteTopic: '', count: 1 }
+  if (!projectId) return { selections: emptySelections, selectedPalette: null, count: 1 }
   try {
     const raw = localStorage.getItem(`gen-filters:${projectId}`)
     if (raw) return JSON.parse(raw)
   } catch {}
-  return { selections: emptySelections, paletteColor: '', paletteStyle: '', paletteTopic: '', count: 1 }
+  return { selections: emptySelections, selectedPalette: null, count: 1 }
 }
 
 export function GeneratorForm({
@@ -64,26 +67,23 @@ export function GeneratorForm({
   const [prompt, setPrompt] = useState('')
   const [count, setCount] = useState(saved.count)
   const [selections, setSelections] = useState<Record<StyleCategory, string[]>>(saved.selections)
-  const [paletteColor, setPaletteColor] = useState(saved.paletteColor)
-  const [paletteStyle, setPaletteStyle] = useState(saved.paletteStyle)
-  const [paletteTopic, setPaletteTopic] = useState(saved.paletteTopic)
+  const [selectedPalette, setSelectedPalette] = useState<SelectedPalette | null>(saved.selectedPalette)
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   // Restore filters when switching projects
   useEffect(() => {
     const s = loadFilters(projectId)
     setSelections(s.selections)
-    setPaletteColor(s.paletteColor)
-    setPaletteStyle(s.paletteStyle)
-    setPaletteTopic(s.paletteTopic)
+    setSelectedPalette(s.selectedPalette)
     setCount(s.count)
   }, [projectId])
 
   // Persist filters on change
   const saveFilters = useCallback(() => {
     if (!projectId) return
-    const data: SavedFilters = { selections, paletteColor, paletteStyle, paletteTopic, count }
+    const data: SavedFilters = { selections, selectedPalette, count }
     localStorage.setItem(`gen-filters:${projectId}`, JSON.stringify(data))
-  }, [projectId, selections, paletteColor, paletteStyle, paletteTopic, count])
+  }, [projectId, selections, selectedPalette, count])
 
   useEffect(() => {
     saveFilters()
@@ -104,12 +104,10 @@ export function GeneratorForm({
   const handleGenerate = () => {
     if (!prompt.trim()) return
 
-    const paletteFilters = [paletteColor, paletteStyle, paletteTopic].filter(Boolean)
-
     const request: GenerateRequest = {
       prompt: prompt.trim(),
       count,
-      ...(paletteFilters.length > 0 && { palette: paletteFilters }),
+      ...(selectedPalette && { palette: selectedPalette.id }),
     }
 
     for (const [key, values] of Object.entries(selections)) {
@@ -150,29 +148,47 @@ export function GeneratorForm({
           />
         ))}
 
-        {/* Palette filters */}
+        {/* Palette */}
         <div className="border-b border-sidebar-border p-4">
-          <Label className="mb-2 text-xs font-medium">Palette (optional)</Label>
-          <div className="flex flex-col gap-2">
-            <Input
-              placeholder="Color (e.g. blue)"
-              value={paletteColor}
-              onChange={(e) => setPaletteColor(e.target.value)}
-              className="h-7 text-xs"
-            />
-            <Input
-              placeholder="Style (e.g. pastel)"
-              value={paletteStyle}
-              onChange={(e) => setPaletteStyle(e.target.value)}
-              className="h-7 text-xs"
-            />
-            <Input
-              placeholder="Topic (e.g. nature)"
-              value={paletteTopic}
-              onChange={(e) => setPaletteTopic(e.target.value)}
-              className="h-7 text-xs"
-            />
-          </div>
+          <Label className="mb-2 text-xs font-medium">Palette</Label>
+          {selectedPalette ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                className="flex h-7 flex-1 overflow-hidden rounded border border-input"
+              >
+                {selectedPalette.colors.map((c, i) => (
+                  <div key={i} className="flex-1" style={{ backgroundColor: c }} />
+                ))}
+              </button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => setSelectedPalette(null)}
+              >
+                <XIcon className="size-3" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full justify-start text-xs text-muted-foreground"
+              onClick={() => setPaletteOpen(true)}
+            >
+              <PaletteIcon className="size-3" />
+              Choose palette...
+            </Button>
+          )}
+          <PaletteBrowser
+            open={paletteOpen}
+            onOpenChange={setPaletteOpen}
+            selectedId={selectedPalette?.id ?? null}
+            onSelect={(p) => setSelectedPalette(p ? { id: p.id, colors: p.colors } : null)}
+          />
         </div>
 
         {/* Count */}
