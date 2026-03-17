@@ -4,28 +4,19 @@ import { eq, and, type SQL } from 'drizzle-orm'
 import { palettes } from '@illustragen/db/platform'
 import type { Env } from '../types'
 
+const PALETTE_FILTERS = {
+  predominantColor: ['blue', 'brown', 'gray', 'green', 'mixed', 'orange', 'pink', 'red', 'turquoise', 'violet', 'yellow'],
+  style: ['bright', 'cold', 'dark', 'gradient', 'monochromatic', 'pastel', 'rainbow', 'vintage', 'warm'],
+  topic: ['autumn', 'christmas', 'food', 'gold', 'halloween', 'happy', 'kids', 'nature', 'space', 'spring', 'summer', 'sunset', 'water', 'wedding', 'winter'],
+  totalColors: [2, 3, 4, 5, 6, 7, 8, 9, 10],
+}
+
 const palettesRouter = new Hono<Env>()
 
-// GET /v1/palettes/filters — distinct values for dropdowns
-palettesRouter.get('/filters', async (c) => {
-  const db = drizzle(c.env.PLATFORM_DB)
-
-  const [colors, styles, topics, counts] = await Promise.all([
-    db.selectDistinct({ v: palettes.predominantColor }).from(palettes),
-    db.selectDistinct({ v: palettes.style }).from(palettes),
-    db.selectDistinct({ v: palettes.topic }).from(palettes),
-    db.selectDistinct({ v: palettes.totalColors }).from(palettes),
-  ])
-
-  return c.json({
-    predominantColor: colors.map(r => r.v).sort(),
-    style: styles.map(r => r.v).sort(),
-    topic: topics.map(r => r.v).sort(),
-    totalColors: counts.map(r => r.v).sort((a, b) => a - b),
-  })
+palettesRouter.get('/filters', (c) => {
+  return c.json(PALETTE_FILTERS)
 })
 
-// GET /v1/palettes — paginated list with filters
 palettesRouter.get('/', async (c) => {
   const db = drizzle(c.env.PLATFORM_DB)
 
@@ -43,7 +34,6 @@ palettesRouter.get('/', async (c) => {
   if (totalColors) conditions.push(eq(palettes.totalColors, Number(totalColors)))
 
   const where = conditions.length > 0 ? and(...conditions) : undefined
-
   const results = await db.select().from(palettes).where(where).limit(limit).offset(offset)
 
   return c.json({ palettes: results })
