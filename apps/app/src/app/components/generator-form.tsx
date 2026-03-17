@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -22,29 +22,72 @@ export interface GenerateRequest {
   placements?: string[]
 }
 
+interface SavedFilters {
+  selections: Record<StyleCategory, string[]>
+  paletteColor: string
+  paletteStyle: string
+  paletteTopic: string
+  count: number
+}
+
+const emptySelections: Record<StyleCategory, string[]> = {
+  renderings: [],
+  elements: [],
+  compositions: [],
+  moods: [],
+  complexities: [],
+  layouts: [],
+  subjects: [],
+  iconStyles: [],
+  placements: [],
+}
+
+function loadFilters(projectId?: string): SavedFilters {
+  if (!projectId) return { selections: emptySelections, paletteColor: '', paletteStyle: '', paletteTopic: '', count: 1 }
+  try {
+    const raw = localStorage.getItem(`gen-filters:${projectId}`)
+    if (raw) return JSON.parse(raw)
+  } catch {}
+  return { selections: emptySelections, paletteColor: '', paletteStyle: '', paletteTopic: '', count: 1 }
+}
+
 export function GeneratorForm({
+  projectId,
   onGenerate,
   generating,
 }: {
+  projectId?: string
   onGenerate: (request: GenerateRequest) => void
   generating: boolean
 }) {
+  const saved = loadFilters(projectId)
   const [prompt, setPrompt] = useState('')
-  const [count, setCount] = useState(1)
-  const [selections, setSelections] = useState<Record<StyleCategory, string[]>>({
-    renderings: [],
-    elements: [],
-    compositions: [],
-    moods: [],
-    complexities: [],
-    layouts: [],
-    subjects: [],
-    iconStyles: [],
-    placements: [],
-  })
-  const [paletteColor, setPaletteColor] = useState('')
-  const [paletteStyle, setPaletteStyle] = useState('')
-  const [paletteTopic, setPaletteTopic] = useState('')
+  const [count, setCount] = useState(saved.count)
+  const [selections, setSelections] = useState<Record<StyleCategory, string[]>>(saved.selections)
+  const [paletteColor, setPaletteColor] = useState(saved.paletteColor)
+  const [paletteStyle, setPaletteStyle] = useState(saved.paletteStyle)
+  const [paletteTopic, setPaletteTopic] = useState(saved.paletteTopic)
+
+  // Restore filters when switching projects
+  useEffect(() => {
+    const s = loadFilters(projectId)
+    setSelections(s.selections)
+    setPaletteColor(s.paletteColor)
+    setPaletteStyle(s.paletteStyle)
+    setPaletteTopic(s.paletteTopic)
+    setCount(s.count)
+  }, [projectId])
+
+  // Persist filters on change
+  const saveFilters = useCallback(() => {
+    if (!projectId) return
+    const data: SavedFilters = { selections, paletteColor, paletteStyle, paletteTopic, count }
+    localStorage.setItem(`gen-filters:${projectId}`, JSON.stringify(data))
+  }, [projectId, selections, paletteColor, paletteStyle, paletteTopic, count])
+
+  useEffect(() => {
+    saveFilters()
+  }, [saveFilters])
 
   const toggleOption = (category: StyleCategory, value: string) => {
     setSelections(prev => {

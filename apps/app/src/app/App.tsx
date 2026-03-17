@@ -109,7 +109,7 @@ function ProjectLayout({
           onRefreshRef={refreshRef}
         />
       </SidebarInset>
-      <SidebarRight user={user} onGenerate={onGenerate} generating={generating} />
+      <SidebarRight user={user} projectId={projectId} onGenerate={onGenerate} generating={generating} />
     </SidebarProvider>
   )
 }

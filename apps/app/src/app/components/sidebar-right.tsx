@@ -9,11 +9,13 @@ import type { User } from '@/lib/api'
 
 export function SidebarRight({
   user,
+  projectId,
   onGenerate,
   generating,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: User
+  projectId?: string
   onGenerate: (request: GenerateRequest) => void
   generating: boolean
 }) {
@@ -27,7 +29,7 @@ export function SidebarRight({
         <NavUser user={{ ...user, avatar: '' }} />
       </SidebarHeader>
       <div className="flex min-h-0 flex-1 flex-col">
-        <GeneratorForm onGenerate={onGenerate} generating={generating} />
+        <GeneratorForm projectId={projectId} onGenerate={onGenerate} generating={generating} />
       </div>
     </Sidebar>
   )
