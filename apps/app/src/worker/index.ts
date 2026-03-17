@@ -118,13 +118,19 @@ app.get('/assets/*', async (c) => {
 
 // Proxy API calls to the API worker via service binding
 app.all('/api/*', async (c) => {
-  const path = c.req.path.replace('/api', '')
-  const headers = new Headers(c.req.raw.headers)
-  const res = await fetchAPI(c.env, path.replace('/v1', ''), {
+  const url = new URL(c.req.url)
+  const apiPath = url.pathname.replace('/api', '') + url.search
+  const init: RequestInit = {
     method: c.req.method,
-    headers,
+    headers: new Headers(c.req.raw.headers),
     body: c.req.method !== 'GET' && c.req.method !== 'HEAD' ? c.req.raw.body : undefined,
-  })
+  }
+  let res: Response
+  if (c.env.API_INTERNAL_URL) {
+    res = await fetch(`${c.env.API_INTERNAL_URL}${apiPath}`, init)
+  } else {
+    res = await c.env.API.fetch(`https://api${apiPath}`, init)
+  }
   return new Response(res.body, {
     status: res.status,
     headers: res.headers,
