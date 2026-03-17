@@ -74,7 +74,7 @@ export function ProjectDashboard({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 p-4">
       {pendingGenerations.map((p) => (
         <GenerationPlaceholder key={p.id} prompt={p.prompt} error={p.error} />
       ))}
