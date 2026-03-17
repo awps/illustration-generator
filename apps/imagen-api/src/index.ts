@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { Env } from "./types";
 import {
   RENDERING_KEYWORDS, ELEMENT_KEYWORDS, COMPOSITION_KEYWORDS,
@@ -6,6 +7,7 @@ import {
 } from "./styles";
 import { resolvePalette } from "./palettes";
 import {runPipeline, PipelineError} from "./pipeline";
+import { type ReferenceImage } from "./ai/image-generator";
 
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -86,13 +88,15 @@ export default {
     const {
       prompt, palette: paletteInput, project, renderings, elements, compositions,
       placements, moods, complexities, layouts, subjects, iconStyles,
-      count, consistent, expand
+      count, consistent, expand, referenceId
     } = body as Record<string, unknown>;
 
     if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0)
       return errorResponse("prompt is required", 400);
     if (prompt.length > 500)
       return errorResponse("prompt must be 500 characters or less", 400);
+    if (referenceId != null && typeof referenceId !== "string")
+      return errorResponse("referenceId must be a string", 400);
 
     const imageCount = count == null ? 1 : count;
     if (typeof imageCount !== "number" || !Number.isInteger(imageCount) || imageCount < 1 || imageCount > 10)
@@ -112,6 +116,19 @@ export default {
     if (isExpand && isConsistent)
       return errorResponse("expand and consistent cannot be used together", 400);
 
+    // Fetch reference image from R2 if provided
+    let referenceImage: ReferenceImage | undefined;
+    if (referenceId) {
+      const refKey = `generations/${referenceId}/transparent.png`;
+      const obj = await env.IMAGES_BUCKET.get(refKey);
+      if (!obj) return errorResponse(`Reference image "${referenceId}" not found`, 404);
+      const buf = await obj.arrayBuffer();
+      referenceImage = {
+        base64: Buffer.from(buf).toString("base64"),
+        mimeType: "image/png",
+      };
+    }
+
     try {
       const palette = resolvePalette(paletteInput);
       const resolvedRenderings = resolveArrayProp(renderings, "rendering", RENDERING_KEYWORDS);
@@ -128,6 +145,7 @@ export default {
         return {
           palette,
           project: project as string | undefined,
+          referenceImage,
           renderings: resolveForPipeline(resolvedRenderings, RENDERING_KEYWORDS),
           elements: resolveForPipeline(resolvedElements, ELEMENT_KEYWORDS),
           compositions: resolveForPipeline(resolvedCompositions, COMPOSITION_KEYWORDS),
@@ -182,6 +200,7 @@ export default {
         const baseOptions = {
           palette,
           project: project as string | undefined,
+          referenceImage,
         };
 
         results = await Promise.all(
@@ -213,9 +232,12 @@ export default {
       });
     } catch (err) {
       if (err instanceof ValidationError) return errorResponse(err.message, 400);
-      if (err instanceof PipelineError)
+      if (err instanceof PipelineError) {
+        console.error(`[pipeline] Step "${err.step}" failed (${err.statusCode}): ${err.message} — ${err.detail}`);
         return errorResponse(err.message, err.statusCode, err.step, err.detail);
+      }
       const message = err instanceof Error ? err.message : "Unknown error";
+      console.error("[pipeline] Unexpected error:", message);
       return errorResponse("Pipeline failed", 500, "unknown", message);
     }
   },

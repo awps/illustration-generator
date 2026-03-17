@@ -10,7 +10,6 @@ export type Env = {
   Bindings: GenerationEnv & {
     PLATFORM_DB: D1Database
     COOKIE_DOMAIN: string
-    APP_ORIGIN: string
   }
   Variables: {
     userId: string

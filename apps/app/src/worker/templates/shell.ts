@@ -1,4 +1,4 @@
-export function shellPage(apiUrl: string, imagesDomain: string): string {
+export function shellPage(imagesDomain: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +6,7 @@ export function shellPage(apiUrl: string, imagesDomain: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Illustragen</title>
   <link rel="stylesheet" href="/assets/main.css">
-  <script>window.__CONFIG__={apiUrl:"${apiUrl}",imagesDomain:"${imagesDomain}"}</script>
+  <script>window.__CONFIG__={imagesDomain:"${imagesDomain}"}</script>
   <script type="module" src="/assets/main.js"></script>
 </head>
 <body>

@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { cors } from 'hono/cors'
 import type { Env } from './types'
 import { platformAuth } from './middleware/auth'
 import { auth } from './routes/auth'
@@ -9,14 +8,6 @@ import { palettesRouter } from './routes/palettes'
 import { user } from './routes/user'
 
 const app = new Hono<Env>()
-
-app.use('*', async (c, next) => {
-  const corsMiddleware = cors({
-    origin: [c.env.APP_ORIGIN],
-    credentials: true,
-  })
-  return corsMiddleware(c, next)
-})
 
 app.get('/v1/health', (c) => c.json({ status: 'ok' }))
 

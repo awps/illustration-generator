@@ -6,6 +6,12 @@ import { parseCookies } from '@illustragen/shared'
 import type { Env } from '../types'
 
 export const platformAuth = createMiddleware<Env>(async (c, next) => {
+  if (c.req.method === 'OPTIONS') return next()
+
+  // Skip auth for public routes
+  const path = new URL(c.req.url).pathname
+  if (path.startsWith('/v1/auth/') || path.startsWith('/v1/health')) return next()
+
   const cookieHeader = c.req.header('cookie') ?? ''
   const cookies = parseCookies(cookieHeader)
   const token = cookies['session']

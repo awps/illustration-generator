@@ -1,5 +1,5 @@
 {
-  "name": "@eleming/api",
+  "name": "@illustragen/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,9 +12,9 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@eleming/db": "*",
-    "@eleming/shared": "*",
-    "@libsql/client": "^0.15.0",
+    "@google/genai": "^1.0.0",
+    "@illustragen/db": "*",
+    "@illustragen/shared": "*",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.12.1",
     "uuidv7": "^1.1.0"

@@ -8,7 +8,6 @@ type Env = {
   Bindings: {
     API: Fetcher
     ASSETS: Fetcher
-    API_URL: string
     API_INTERNAL_URL?: string
     IMAGES_DOMAIN: string
   }
@@ -22,7 +21,7 @@ function fetchAPI(env: Env['Bindings'], path: string, init?: RequestInit): Promi
   if (env.API_INTERNAL_URL) {
     return fetch(`${env.API_INTERNAL_URL}${fullPath}`, init)
   }
-  return env.API.fetch(`${env.API_URL}${fullPath}`, init)
+  return env.API.fetch(`https://api${fullPath}`, init)
 }
 
 const app = new Hono<Env>()
@@ -117,6 +116,21 @@ app.get('/assets/*', async (c) => {
   }
 })
 
+// Proxy API calls to the API worker via service binding
+app.all('/api/*', async (c) => {
+  const path = c.req.path.replace('/api', '')
+  const headers = new Headers(c.req.raw.headers)
+  const res = await fetchAPI(c.env, path.replace('/v1', ''), {
+    method: c.req.method,
+    headers,
+    body: c.req.method !== 'GET' && c.req.method !== 'HEAD' ? c.req.raw.body : undefined,
+  })
+  return new Response(res.body, {
+    status: res.status,
+    headers: res.headers,
+  })
+})
+
 // All other routes — auth gate
 app.all('*', async (c) => {
   const cookieHeader = c.req.header('cookie') ?? ''
@@ -136,7 +150,7 @@ app.all('*', async (c) => {
   }
 
   // Serve SPA shell for all authenticated routes
-  return c.html(shellPage(c.env.API_URL, c.env.IMAGES_DOMAIN))
+  return c.html(shellPage(c.env.IMAGES_DOMAIN))
 })
 
 export default app

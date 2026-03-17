@@ -3,14 +3,15 @@
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-02-22",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
   "routes": [
-    { "pattern": "imagen.publingo.com/*", "zone_name": "publingo.com" }
+    { "pattern": "illustrations.publingo.com", "custom_domain": true }
   ],
   "assets": {
     "directory": "./dist/client"
   },
   "vars": {
-    "API_URL": "https://api-imagen.publingo.com",
     "IMAGES_DOMAIN": "imagen.publingo.com"
   },
   "services": [

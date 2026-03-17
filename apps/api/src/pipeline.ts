@@ -131,8 +131,13 @@ export async function runPipeline(
   // don't apply transforms when called from within a Worker
   let transparentPng: ArrayBuffer;
   try {
-    const segmentUrl = `https://${env.IMAGES_DOMAIN}/cdn-cgi/image/segment=foreground,format=png,quality=75/${rawKey}`;
-    const segmentResponse = await fetch(segmentUrl);
+    // Fetch the raw image URL through the images domain using cdn-cgi transform.
+    // This must go through a domain on the same Cloudflare zone that has Image Resizing enabled.
+    const imageUrl = `https://${env.IMAGES_DOMAIN}/${rawKey}`;
+    console.log(`[pipeline:remove-background] Transforming: ${imageUrl}`);
+    const segmentResponse = await fetch(imageUrl, {
+      cf: { image: { segment: 'foreground', format: 'png', quality: 75 } },
+    } as RequestInit);
 
     if (!segmentResponse.ok) {
       const body = await segmentResponse.text().catch(() => "");

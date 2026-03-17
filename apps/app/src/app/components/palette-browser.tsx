@@ -49,10 +49,17 @@ export function PaletteBrowser({
   const [loading, setLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const fetchPalettes = useCallback(async (reset: boolean) => {
+  const fetchFilters = useCallback(async () => {
+    const res = await apiFetch('/v1/palettes/filters')
+    if (res.ok) {
+      const data = await res.json()
+      setFilters(data)
+    }
+  }, [])
+
+  const fetchPalettes = useCallback(async (reset: boolean, currentOffset: number) => {
     setLoading(true)
-    const newOffset = reset ? 0 : offset
-    const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(newOffset) })
+    const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(currentOffset) })
     if (color) params.set('color', color)
     if (style) params.set('style', style)
     if (topic) params.set('topic', topic)
@@ -61,7 +68,6 @@ export function PaletteBrowser({
     const res = await apiFetch(`/v1/palettes?${params}`)
     if (res.ok) {
       const data = await res.json()
-      if (!filters) setFilters(data.filters)
       const newPalettes = data.palettes as Palette[]
       if (reset) {
         setPalettes(newPalettes)
@@ -69,32 +75,35 @@ export function PaletteBrowser({
       } else {
         setPalettes(prev => [...prev, ...newPalettes])
       }
-      setOffset(newOffset + newPalettes.length)
+      setOffset(currentOffset + newPalettes.length)
       setHasMore(newPalettes.length === PAGE_SIZE)
     }
     setLoading(false)
-  }, [offset, color, style, topic, totalColors, filters])
+  }, [color, style, topic, totalColors])
 
-  // Load on open
+  // Load filters once on open
+  useEffect(() => {
+    if (open && !filters) {
+      fetchFilters()
+    }
+  }, [open, filters, fetchFilters])
+
+  // Load palettes on open
   useEffect(() => {
     if (open) {
-      setOffset(0)
-      fetchPalettes(true)
+      fetchPalettes(true, 0)
     }
   }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Reload on filter change
   const applyFilters = () => {
-    setOffset(0)
-    fetchPalettes(true)
+    fetchPalettes(true, 0)
   }
 
-  // Infinite scroll
   const handleScroll = () => {
     const el = scrollRef.current
     if (!el || loading || !hasMore) return
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
-      fetchPalettes(false)
+      fetchPalettes(false, offset)
     }
   }
 

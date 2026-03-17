@@ -35,7 +35,7 @@ export const ELEMENT_KEYWORDS = {
   badges: "1–2 small floating benefit badges with a checkmark icon",
   cursors: "one single pointer or hand cursor indicating interactivity",
   arrows: "directional connector arrows showing relationships between elements",
-  pills: "rounded placeholder pills for abstracted text within cards — use a very light tint of the palette's primary color instead of grey so they remain visible after background removal",
+  pills: "rounded placeholder pills for abstracted text within cards — use a very light tint of the palette's primary color instead of grey",
   charts: "one data chart or graph visualization",
   tables: "one data table with rows, columns, and status indicators",
 };
@@ -136,7 +136,7 @@ export const SUBJECT_KEYWORDS = {
   website: "website, landing pages, blogs, portfolios, online presence",
   mobile: "mobile apps, smartphones, app interfaces, on-the-go usage",
   wordpress: "WordPress, themes, plugins, blogging, website building",
-  management: "management, admin panels, user roles, organizational tools",
+  management: "management, admin page, organizational tools",
 };
 export type Subject = keyof typeof SUBJECT_KEYWORDS;
 
