@@ -1,7 +1,5 @@
-const apiUrl = (window as any).__CONFIG__?.apiUrl ?? 'https://api-igen.publingo.com'
-
 export function apiFetch(path: string, init?: RequestInit) {
-  return fetch(`${apiUrl}${path}`, { credentials: 'include', ...init })
+  return fetch(`/api${path}`, init)
 }
 
 export interface User {

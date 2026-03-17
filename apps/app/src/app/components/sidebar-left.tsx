@@ -13,11 +13,13 @@ export function SidebarLeft({
   projects,
   currentProjectId,
   onProjectCreated,
+  generationCounter,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   projects: Project[]
   currentProjectId?: string
   onProjectCreated: () => Promise<void>
+  generationCounter?: number
 }) {
   return (
     <Sidebar className="border-r-0" {...props}>
@@ -29,7 +31,7 @@ export function SidebarLeft({
         />
       </SidebarHeader>
       <SidebarContent>
-        <RecentGenerations projectId={currentProjectId} />
+        <RecentGenerations projectId={currentProjectId} refreshKey={generationCounter} />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

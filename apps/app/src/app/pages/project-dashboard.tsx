@@ -10,12 +10,10 @@ const IMAGES_DOMAIN = (window as any).__CONFIG__?.imagesDomain ?? 'imagen.publin
 
 export function ProjectDashboard({
   pendingGenerations,
-  completedGenerations,
   onRefreshRef,
 }: {
   pendingGenerations: PendingGeneration[]
-  completedGenerations: Generation[]
-  onRefreshRef: MutableRefObject<() => void>
+  onRefreshRef: MutableRefObject<() => Promise<void>>
 }) {
   const { projectId } = useParams()
   const [generations, setGenerations] = useState<Generation[]>([])
@@ -50,17 +48,8 @@ export function ProjectDashboard({
     }
   }
 
-  // Merge completed (from generate) with loaded (from API), deduplicate
-  const allGenerations = [...completedGenerations, ...generations]
-  const seen = new Set<string>()
-  const uniqueGenerations = allGenerations.filter(g => {
-    if (seen.has(g.id)) return false
-    seen.add(g.id)
-    return true
-  })
-
   const hasPending = pendingGenerations.length > 0
-  const hasGenerations = uniqueGenerations.length > 0
+  const hasGenerations = generations.length > 0
   const isEmpty = !hasPending && !hasGenerations && !loading
 
   if (loading && !hasPending && !hasGenerations) {
@@ -90,7 +79,7 @@ export function ProjectDashboard({
         <GenerationPlaceholder key={p.id} prompt={p.prompt} error={p.error} />
       ))}
 
-      {uniqueGenerations.map((gen) => {
+      {generations.map((gen) => {
         const renderings = gen.renderings ? JSON.parse(gen.renderings) as string[] : []
         const imgUrl = `https://${IMAGES_DOMAIN}/${gen.storagePath}transparent.png`
         return (

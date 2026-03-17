@@ -23,10 +23,12 @@ export function SidebarRight({
       className="sticky top-0 hidden h-svh border-l lg:flex"
       {...props}
     >
-      <SidebarHeader className="h-16 border-b border-sidebar-border">
+      <SidebarHeader className="h-16 shrink-0 border-b border-sidebar-border">
         <NavUser user={{ ...user, avatar: '' }} />
       </SidebarHeader>
-      <GeneratorForm onGenerate={onGenerate} generating={generating} />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <GeneratorForm onGenerate={onGenerate} generating={generating} />
+      </div>
     </Sidebar>
   )
 }

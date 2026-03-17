@@ -30,7 +30,8 @@ function ProjectLayout({
   const [pendingGenerations, setPendingGenerations] = useState<PendingGeneration[]>([])
   const [completedGenerations, setCompletedGenerations] = useState<Generation[]>([])
   const [generating, setGenerating] = useState(false)
-  const refreshRef = useRef<() => void>(() => {})
+  const [generationCounter, setGenerationCounter] = useState(0)
+  const refreshRef = useRef<() => Promise<void>>(async () => {})
 
   // Reset state when switching projects
   useEffect(() => {
@@ -66,9 +67,10 @@ function ProjectLayout({
       const newGenerations = data.images as Generation[]
 
       setPendingGenerations(prev => prev.filter(p => !pendingIds.includes(p.id)))
-      setCompletedGenerations(prev => [...newGenerations, ...prev])
 
-      refreshRef.current()
+      // Refresh the grid — don't use completedGenerations to avoid dupes
+      await refreshRef.current()
+      setGenerationCounter(c => c + 1)
     } catch {
       setPendingGenerations(prev =>
         prev.map(p => pendingIds.includes(p.id) ? { ...p, error: 'Network error' } : p)
@@ -84,6 +86,7 @@ function ProjectLayout({
         projects={projects}
         currentProjectId={projectId}
         onProjectCreated={onProjectCreated}
+        generationCounter={generationCounter}
       />
       <SidebarInset>
         <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
@@ -103,7 +106,6 @@ function ProjectLayout({
         </header>
         <ProjectDashboard
           pendingGenerations={pendingGenerations}
-          completedGenerations={completedGenerations}
           onRefreshRef={refreshRef}
         />
       </SidebarInset>

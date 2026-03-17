@@ -10,7 +10,7 @@ import {
 import { ImageIcon } from 'lucide-react'
 import { apiFetch, type Generation } from '@/lib/api'
 
-export function RecentGenerations({ projectId }: { projectId?: string }) {
+export function RecentGenerations({ projectId, refreshKey }: { projectId?: string; refreshKey?: number }) {
   const [generations, setGenerations] = useState<Generation[]>([])
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export function RecentGenerations({ projectId }: { projectId?: string }) {
     apiFetch(`/v1/projects/${projectId}/generations`)
       .then(res => res.ok ? res.json() : { generations: [] })
       .then(data => setGenerations(data.generations.slice(0, 10)))
-  }, [projectId])
+  }, [projectId, refreshKey])
 
   if (!projectId || generations.length === 0) return null
 
