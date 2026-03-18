@@ -24,37 +24,34 @@ interface GradientState {
 }
 
 function applyGradient(bg: Rect, state: GradientState) {
-  // Fabric v7: gradient coords are relative to the object (0 to width/height)
-  // Use normalized coords: 0,0 = top-left, width,height = bottom-right of the rect
-  const w = bg.width ?? 1
-  const h = bg.height ?? 1
+  // Fabric v7: use gradientUnits 'percentage' so coords are 0-1 relative to object size
+  const rad = (state.angle * Math.PI) / 180
+  const stops = state.colors.map((c, i) => ({
+    offset: i / Math.max(state.colors.length - 1, 1),
+    color: c,
+  }))
 
   if (state.type === 'linear') {
-    const rad = (state.angle * Math.PI) / 180
     bg.set('fill', new Gradient({
       type: 'linear',
+      gradientUnits: 'percentage',
       coords: {
-        x1: w / 2 - Math.cos(rad) * w / 2,
-        y1: h / 2 - Math.sin(rad) * h / 2,
-        x2: w / 2 + Math.cos(rad) * w / 2,
-        y2: h / 2 + Math.sin(rad) * h / 2,
+        x1: 0.5 - Math.cos(rad) * 0.5,
+        y1: 0.5 - Math.sin(rad) * 0.5,
+        x2: 0.5 + Math.cos(rad) * 0.5,
+        y2: 0.5 + Math.sin(rad) * 0.5,
       },
-      colorStops: state.colors.map((c, i) => ({
-        offset: i / Math.max(state.colors.length - 1, 1),
-        color: c,
-      })),
+      colorStops: stops,
     }))
   } else {
     bg.set('fill', new Gradient({
       type: 'radial',
+      gradientUnits: 'percentage',
       coords: {
-        x1: w / 2, y1: h / 2, r1: 0,
-        x2: w / 2, y2: h / 2, r2: Math.max(w, h) / 2,
+        x1: 0.5, y1: 0.5, r1: 0,
+        x2: 0.5, y2: 0.5, r2: 0.5,
       },
-      colorStops: state.colors.map((c, i) => ({
-        offset: i / Math.max(state.colors.length - 1, 1),
-        color: c,
-      })),
+      colorStops: stops,
     }))
   }
 }
