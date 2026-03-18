@@ -116,6 +116,19 @@ app.get('/assets/*', async (c) => {
   }
 })
 
+// Proxy R2 images — avoids CORS issues with FabricJS canvas
+app.get('/images/*', async (c) => {
+  const imagePath = c.req.path.replace('/images/', '')
+  const res = await fetch(`https://${c.env.IMAGES_DOMAIN}/${imagePath}`)
+  return new Response(res.body, {
+    status: res.status,
+    headers: {
+      'Content-Type': res.headers.get('Content-Type') ?? 'image/png',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
+  })
+})
+
 // Proxy API calls to the API worker via service binding
 app.all('/api/*', async (c) => {
   const url = new URL(c.req.url)

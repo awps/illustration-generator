@@ -9,15 +9,13 @@ import { TEMPLATES } from '@/lib/compose-templates'
 import { ArrowLeftIcon, DownloadIcon } from 'lucide-react'
 import type { IText } from 'fabric'
 
-const IMAGES_DOMAIN = (window as any).__CONFIG__?.imagesDomain ?? 'imagen.publingo.com'
-
 export function ComposePage() {
   const { projectId, generationId } = useParams()
   const editorRef = useRef<CanvasEditorHandle>(null)
   const [activeTemplate, setActiveTemplate] = useState(TEMPLATES[0]!.id)
   const [selectedText, setSelectedText] = useState<IText | null>(null)
 
-  const imageUrl = `https://${IMAGES_DOMAIN}/generations/${projectId}/${generationId}/transparent.png`
+  const imageUrl = `/images/generations/${projectId}/${generationId}/transparent.png`
 
   const handleTemplateSelect = useCallback((template: { id: string; width: number; height: number }) => {
     setActiveTemplate(template.id)
