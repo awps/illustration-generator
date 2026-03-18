@@ -67,7 +67,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       bgRef.current = bg
 
       // Load illustration
-      FabricImage.fromURL(imageUrl, { crossOrigin: 'anonymous' }).then((img) => {
+      FabricImage.fromURL(imageUrl).then((img) => {
         const scale = Math.min(
           (initialWidth * 0.7) / (img.width ?? 1),
           (initialHeight * 0.7) / (img.height ?? 1)
@@ -82,6 +82,8 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         })
         canvas.add(img)
         canvas.renderAll()
+      }).catch((err) => {
+        console.error('[canvas] Failed to load image:', imageUrl, err)
       })
 
       // Selection events
