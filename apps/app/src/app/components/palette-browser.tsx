@@ -109,7 +109,7 @@ export function PaletteBrowser({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[90vh] max-w-6xl flex-col gap-0 p-0">
+      <DialogContent className="flex h-[90vh] !max-w-[80rem] flex-col gap-0 p-0">
         <DialogHeader className="shrink-0 border-b px-4 py-3">
           <DialogTitle>Choose a Palette</DialogTitle>
         </DialogHeader>
@@ -142,7 +142,7 @@ export function PaletteBrowser({
 
         {/* Grid */}
         <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
             {palettes.map((p) => {
               const colors = parseColors(p.colors)
               const isSelected = p.id === selectedId
