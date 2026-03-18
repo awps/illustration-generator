@@ -7,7 +7,7 @@ import { GradientControls } from '@/components/compose/gradient-controls'
 import { TextControls } from '@/components/compose/text-controls'
 import { TEMPLATES } from '@/lib/compose-templates'
 import { ArrowLeftIcon, DownloadIcon } from 'lucide-react'
-import type { IText } from 'fabric'
+import type { Textbox as IText } from 'fabric'
 
 export function ComposePage() {
   const { projectId, generationId } = useParams()

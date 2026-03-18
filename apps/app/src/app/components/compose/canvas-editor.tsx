@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
-import { Canvas, Rect, FabricImage, Gradient, IText } from 'fabric'
+import { Canvas, Rect, FabricImage, Gradient, Textbox } from 'fabric'
 
 export interface CanvasEditorHandle {
   canvas: Canvas | null
@@ -16,13 +16,60 @@ interface CanvasEditorProps {
   onSelectionChange?: (type: 'text' | 'image' | null, object: any) => void
 }
 
+// Store last gradient params so we can re-apply on resize
+interface GradientState {
+  type: 'linear' | 'radial'
+  angle: number
+  colors: string[]
+}
+
+function applyGradient(bg: Rect, state: GradientState) {
+  // Fabric v7: gradient coords are relative to the object (0 to width/height)
+  // Use normalized coords: 0,0 = top-left, width,height = bottom-right of the rect
+  const w = bg.width ?? 1
+  const h = bg.height ?? 1
+
+  if (state.type === 'linear') {
+    const rad = (state.angle * Math.PI) / 180
+    bg.set('fill', new Gradient({
+      type: 'linear',
+      coords: {
+        x1: w / 2 - Math.cos(rad) * w / 2,
+        y1: h / 2 - Math.sin(rad) * h / 2,
+        x2: w / 2 + Math.cos(rad) * w / 2,
+        y2: h / 2 + Math.sin(rad) * h / 2,
+      },
+      colorStops: state.colors.map((c, i) => ({
+        offset: i / Math.max(state.colors.length - 1, 1),
+        color: c,
+      })),
+    }))
+  } else {
+    bg.set('fill', new Gradient({
+      type: 'radial',
+      coords: {
+        x1: w / 2, y1: h / 2, r1: 0,
+        x2: w / 2, y2: h / 2, r2: Math.max(w, h) / 2,
+      },
+      colorStops: state.colors.map((c, i) => ({
+        offset: i / Math.max(state.colors.length - 1, 1),
+        color: c,
+      })),
+    }))
+  }
+}
+
 export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
   ({ imageUrl, initialWidth, initialHeight, onSelectionChange }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const fabricRef = useRef<Canvas | null>(null)
     const bgRef = useRef<Rect | null>(null)
+    const imgRef = useRef<FabricImage | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
     const sizeRef = useRef({ width: initialWidth, height: initialHeight })
+    const gradientRef = useRef<GradientState>({
+      type: 'linear', angle: 135, colors: ['#334155', '#0f172a'],
+    })
 
     const fitToContainer = useCallback((canvas: Canvas, w: number, h: number) => {
       const container = containerRef.current
@@ -34,18 +81,33 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       canvas.setDimensions({ width: w * scale, height: h * scale })
     }, [])
 
+    const centerIllustration = useCallback((canvas: Canvas, img: FabricImage, w: number, h: number) => {
+      const scale = Math.min(
+        (w * 0.7) / (img.getOriginalSize().width),
+        (h * 0.7) / (img.getOriginalSize().height)
+      )
+      img.set({
+        scaleX: scale,
+        scaleY: scale,
+        left: w / 2,
+        top: h / 2,
+        originX: 'center',
+        originY: 'center',
+      })
+      canvas.renderAll()
+    }, [])
+
     useEffect(() => {
       if (!canvasRef.current) return
 
       const canvas = new Canvas(canvasRef.current, {
         width: initialWidth,
         height: initialHeight,
-        backgroundColor: '#000000',
       })
 
       fabricRef.current = canvas
 
-      // Background gradient rect
+      // Background rect — fill entire canvas
       const bg = new Rect({
         left: 0,
         top: 0,
@@ -54,32 +116,15 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         selectable: false,
         evented: false,
       })
-      bg.set('fill', new Gradient({
-        type: 'linear',
-        coords: { x1: 0, y1: 0, x2: initialWidth, y2: initialHeight },
-        colorStops: [
-          { offset: 0, color: '#334155' },
-          { offset: 1, color: '#0f172a' },
-        ],
-      }))
+      applyGradient(bg, gradientRef.current)
       canvas.add(bg)
       canvas.sendObjectToBack(bg)
       bgRef.current = bg
 
       // Load illustration
       FabricImage.fromURL(imageUrl).then((img) => {
-        const scale = Math.min(
-          (initialWidth * 0.7) / (img.width ?? 1),
-          (initialHeight * 0.7) / (img.height ?? 1)
-        )
-        img.set({
-          scaleX: scale,
-          scaleY: scale,
-          left: initialWidth / 2,
-          top: initialHeight / 2,
-          originX: 'center',
-          originY: 'center',
-        })
+        imgRef.current = img
+        centerIllustration(canvas, img, initialWidth, initialHeight)
         canvas.add(img)
         canvas.renderAll()
       }).catch((err) => {
@@ -89,26 +134,24 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       // Selection events
       canvas.on('selection:created', (e) => {
         const obj = e.selected?.[0]
-        if (obj instanceof IText) onSelectionChange?.('text', obj)
+        if (obj instanceof Textbox) onSelectionChange?.('text', obj)
         else onSelectionChange?.('image', obj)
       })
       canvas.on('selection:updated', (e) => {
         const obj = e.selected?.[0]
-        if (obj instanceof IText) onSelectionChange?.('text', obj)
+        if (obj instanceof Textbox) onSelectionChange?.('text', obj)
         else onSelectionChange?.('image', obj)
       })
       canvas.on('selection:cleared', () => {
         onSelectionChange?.(null, null)
       })
-      // Also track text edits
       canvas.on('object:modified', (e) => {
         const obj = e.target
-        if (obj instanceof IText) onSelectionChange?.('text', obj)
+        if (obj instanceof Textbox) onSelectionChange?.('text', obj)
       })
 
       fitToContainer(canvas, initialWidth, initialHeight)
 
-      // Resize handler
       const handleResize = () => {
         fitToContainer(canvas, sizeRef.current.width, sizeRef.current.height)
       }
@@ -123,74 +166,67 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
 
     useImperativeHandle(ref, () => ({
       canvas: fabricRef.current,
+
       setTemplate(width: number, height: number) {
         const canvas = fabricRef.current
         const bg = bgRef.current
+        const img = imgRef.current
         if (!canvas || !bg) return
         sizeRef.current = { width, height }
 
-        // Update background rect size
+        // Resize background
         bg.set({ width, height })
+        applyGradient(bg, gradientRef.current)
 
-        // Re-apply gradient with new dimensions
-        const fill = bg.fill
-        if (fill instanceof Gradient) {
-          const coords = fill.coords
-          if (fill.type === 'linear' && coords) {
-            // Recalculate based on stored gradient
-          }
+        // Re-center and scale illustration to fit new dimensions
+        if (img) {
+          centerIllustration(canvas, img, width, height)
         }
+
+        // Re-center any text objects
+        canvas.getObjects().forEach((obj) => {
+          if (obj instanceof Textbox) {
+            // Keep text within bounds — clamp position
+            const objW = (obj.width ?? 0) * (obj.scaleX ?? 1)
+            const objH = (obj.height ?? 0) * (obj.scaleY ?? 1)
+            if ((obj.left ?? 0) > width) obj.set({ left: width - objW / 2 })
+            if ((obj.top ?? 0) > height) obj.set({ top: height - objH / 2 })
+          }
+        })
 
         canvas.setDimensions({ width, height })
         fitToContainer(canvas, width, height)
         canvas.renderAll()
       },
+
       setGradient(type: 'linear' | 'radial', angle: number, colors: string[]) {
         const bg = bgRef.current
         const canvas = fabricRef.current
         if (!bg || !canvas) return
-        const w = bg.width ?? 1
-        const h = bg.height ?? 1
-        const rad = (angle * Math.PI) / 180
-
-        if (type === 'linear') {
-          bg.set('fill', new Gradient({
-            type: 'linear',
-            coords: {
-              x1: w / 2 - Math.cos(rad) * w / 2,
-              y1: h / 2 - Math.sin(rad) * h / 2,
-              x2: w / 2 + Math.cos(rad) * w / 2,
-              y2: h / 2 + Math.sin(rad) * h / 2,
-            },
-            colorStops: colors.map((c, i) => ({ offset: i / Math.max(colors.length - 1, 1), color: c })),
-          }))
-        } else {
-          bg.set('fill', new Gradient({
-            type: 'radial',
-            coords: { x1: w / 2, y1: h / 2, r1: 0, x2: w / 2, y2: h / 2, r2: Math.max(w, h) / 2 },
-            colorStops: colors.map((c, i) => ({ offset: i / Math.max(colors.length - 1, 1), color: c })),
-          }))
-        }
+        gradientRef.current = { type, angle, colors }
+        applyGradient(bg, gradientRef.current)
         canvas.renderAll()
       },
+
       addText() {
         const canvas = fabricRef.current
         if (!canvas) return
         const { width, height } = sizeRef.current
-        const text = new IText('Your text here', {
-          left: width / 2,
-          top: height / 2,
-          originX: 'center',
-          originY: 'center',
+        const textbox = new Textbox('Your text here', {
+          left: width * 0.1,
+          top: height * 0.1,
+          width: width * 0.4,
           fontFamily: 'Inter Variable, sans-serif',
           fontSize: 48,
           fill: '#ffffff',
           fontWeight: 'bold',
+          splitByGrapheme: false,
         })
-        canvas.add(text)
-        canvas.setActiveObject(text)
+        canvas.add(textbox)
+        canvas.setActiveObject(textbox)
         canvas.renderAll()
       },
+
       exportPNG() {
         const canvas = fabricRef.current
         const bg = bgRef.current

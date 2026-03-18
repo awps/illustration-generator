@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { FONT_FAMILIES } from '@/lib/compose-templates'
 import { PlusIcon, Trash2Icon, BoldIcon, ItalicIcon } from 'lucide-react'
-import type { IText } from 'fabric'
+import type { Textbox as IText } from 'fabric'
 
 export function TextControls({
   selectedText,
