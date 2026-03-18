@@ -4,7 +4,7 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url", "value": "https://api-imagen.publingo.kom" },
+    { "key": "base_url", "value": "https://illustrations.publingo.kom/api" },
     { "key": "project_id", "value": "" },
     { "key": "generation_id", "value": "" }
   ],

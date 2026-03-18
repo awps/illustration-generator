@@ -1,6 +1,3 @@
 export * from './types/index'
 export { serializeCookie, parseCookies } from './lib/cookie'
 export type { CookieOptions } from './lib/cookie'
-export { localeCode, localeDbCode, canonicalUrl, alternateLinks } from './lib/locale'
-export { reconstructSiteConfig } from './lib/site-config'
-export type { SettingRow } from './lib/site-config'

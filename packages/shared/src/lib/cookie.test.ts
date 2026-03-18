@@ -11,12 +11,12 @@ describe('serializeCookie', () => {
       httpOnly: true,
       secure: true,
       sameSite: 'Lax',
-      domain: '.eleming.com',
+      domain: '.illustragen.com',
       path: '/',
       maxAge: 2592000,
     })
     expect(result).toBe(
-      'session=abc123; HttpOnly; Secure; SameSite=Lax; Domain=.eleming.com; Path=/; Max-Age=2592000'
+      'session=abc123; HttpOnly; Secure; SameSite=Lax; Domain=.illustragen.com; Path=/; Max-Age=2592000'
     )
   })
 

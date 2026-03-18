@@ -28,7 +28,12 @@ export const palettes = sqliteTable('palettes', {
   predominantColor: text('predominant_color').notNull(),
   style: text('style').notNull(),
   topic: text('topic').notNull(),
-})
+}, (table) => [
+  index('idx_palettes_predominant_color').on(table.predominantColor),
+  index('idx_palettes_style').on(table.style),
+  index('idx_palettes_topic').on(table.topic),
+  index('idx_palettes_total_colors').on(table.totalColors),
+])
 
 // =====================
 // Generations
@@ -54,6 +59,8 @@ export const generations = sqliteTable('generations', {
 }, (table) => [
   index('idx_generations_project_id').on(table.projectId),
   index('idx_generations_user_id').on(table.userId),
+  index('idx_generations_created_at').on(table.createdAt),
+  index('idx_generations_palette_id').on(table.paletteId),
 ])
 
 // =====================

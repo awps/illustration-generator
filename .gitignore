@@ -186,3 +186,5 @@ npm-debug.log*
 .idea/
 .playwright-mcp
 .claude/worktrees
+.local-data
+.env.tpl

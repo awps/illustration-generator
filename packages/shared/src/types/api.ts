@@ -19,22 +19,7 @@ export interface AuthResponse {
   }
 }
 
-export interface CreateSiteRequest {
-  tursoUrl: string
-  tursoAuthToken: string
-}
-
-export interface CreateDomainRequest {
-  domain: string
-  isPrimary?: boolean
-}
-
 export interface ApiError {
   error: string
   message: string
-}
-
-export interface MagicTokenResponse {
-  token: string
-  url: string
 }

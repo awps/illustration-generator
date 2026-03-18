@@ -1,5 +1,5 @@
 {
-  "name": "@eleming/shared",
+  "name": "@illustragen/shared",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,7 @@
     "./types": "./src/types/index.ts",
     "./lib/*": "./src/lib/*.ts"
   },
-  "dependencies": {
-    "@libsql/client": "^0.17.0",
-    "drizzle-orm": "^0.45.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"

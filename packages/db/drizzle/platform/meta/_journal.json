@@ -15,6 +15,13 @@
       "when": 1773690142980,
       "tag": "0001_busy_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1773764207460,
+      "tag": "0002_closed_bromley",
+      "breakpoints": true
     }
   ]
 }

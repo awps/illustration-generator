@@ -1,19 +1,19 @@
 {
-  "name": "eleming",
+  "name": "illustragen",
   "private": true,
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "dev:api": "npm run dev -w @eleming/api",
-    "dev:app": "npm run dev -w @eleming/app",
-    "dev:site": "npm run dev -w @eleming/site",
+    "dev:api": "npm run dev -w @illustragen/api",
+    "dev:app": "npm run dev -w @illustragen/app",
     "test": "npm run test --workspaces --if-present",
     "test:run": "npm run test:run --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "docker": "op run --env-file=.env.tpl -- docker compose down && op run --env-file=.env.tpl -- docker compose up -d --build",
-    "docker:reset-db": "op run --env-file=.env.tpl -- docker compose down && docker volume rm zerowp-eleming-cms_d1_data && op run --env-file=.env.tpl -- docker compose up -d --build",
-    "docker:trust-ca": "op run --env-file=.env.tpl -- docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt docker/caddy-root-ca.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain docker/caddy-root-ca.crt && echo 'Caddy root CA trusted'"
+    "deploy": "npm run deploy -w @illustragen/api && npm run deploy -w @illustragen/app",
+    "docker": "docker compose --env-file .env.tpl down && docker compose --env-file .env.tpl up --build",
+    "docker:reset-db": "docker compose --env-file .env.tpl down && rm -rf .local-data/v3 && docker compose --env-file .env.tpl up --build",
+    "docker:trust-ca": "docker compose --env-file .env.tpl cp caddy:/data/caddy/pki/authorities/local/root.crt docker/caddy-root-ca.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain docker/caddy-root-ca.crt && echo 'Caddy root CA trusted'"
   }
 }

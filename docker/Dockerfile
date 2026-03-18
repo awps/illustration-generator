@@ -12,7 +12,6 @@ COPY packages/db/package.json packages/db/
 COPY packages/shared/package.json packages/shared/
 COPY apps/api/package.json apps/api/
 COPY apps/app/package.json apps/app/
-COPY apps/site/package.json apps/site/
 
 # Install all workspace dependencies (resolves Linux-native workerd binary)
 RUN npm install

@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: >
-      sh -c "printenv | grep -E '^(COOKIE_DOMAIN|APP_ORIGIN)=' > .env
+      sh -c "printenv | grep -E '^(COOKIE_DOMAIN|APP_ORIGIN|GEMINI_API_KEY)=' > .env
       && npx wrangler d1 execute illustragen-platform --local --persist-to /app/.local-data --command=\"SELECT 1 FROM platform_users LIMIT 1\" 2>/dev/null
       && echo 'DB already initialized, skipping migrations'
       || { echo 'Running migrations...' && for f in /app/packages/db/drizzle/platform/*.sql; do npx wrangler d1 execute illustragen-platform --local --persist-to /app/.local-data --file=\"$$f\"; done; }
@@ -26,6 +26,7 @@ services:
     environment:
       - COOKIE_DOMAIN=${COOKIE_DOMAIN}
       - APP_ORIGIN=${APP_ORIGIN}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
       - ./packages:/app/packages:ro
       - ./apps/api:/app/apps/api
@@ -39,13 +40,12 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: >
-      sh -c "printenv | grep -E '^(API_URL|API_INTERNAL_URL|IMAGES_DOMAIN)=' > .env
+      sh -c "printenv | grep -E '^(API_INTERNAL_URL|IMAGES_DOMAIN)=' > .env
       && npx vite build
       && (npx vite build --watch &)
       && npx wrangler dev --port 8788 --ip 0.0.0.0 --persist-to /app/.local-data"
     working_dir: /app/apps/app
     environment:
-      - API_URL=${API_URL}
       - API_INTERNAL_URL=${API_INTERNAL_URL}
       - IMAGES_DOMAIN=${IMAGES_DOMAIN}
     volumes:

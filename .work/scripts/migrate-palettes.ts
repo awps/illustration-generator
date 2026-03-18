@@ -1,8 +1,9 @@
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import { join, basename } from "path";
+import { uuidv7 } from "uuidv7";
 
-const PALETTES_DIR = join(__dirname, "../src/palletes");
+const PALETTES_DIR = join(__dirname, "../../apps/imagen-api/src/palletes");
 
 interface PaletteEntry {
   colors: string[];
@@ -272,17 +273,18 @@ for (const category of ["by-color", "by-style", "by-topic", "by-number"]) {
   }
 }
 
-// Build output — compress RGB strings and wrap in { filters, palletes }
+// Build output — compress RGB strings, assign uuidv7 IDs, wrap in { filters, palletes }
 const palettes: Record<string, PaletteEntry> = {};
-for (const [id, colors] of registry) {
+for (const [hash, colors] of registry) {
   const compressed = colors.map(c => c.replace(/\s/g, ""));
   const stats = analyzepalette(colors);
+  const id = uuidv7();
   palettes[id] = {
     colors: compressed,
     totalColors: colors.length,
     predominantColor: detectPredominantColor(stats),
-    style: fileStyle.get(id) ?? detectStyle(stats),
-    topic: fileTopic.get(id) ?? detectTopic(stats),
+    style: fileStyle.get(hash) ?? detectStyle(stats),
+    topic: fileTopic.get(hash) ?? detectTopic(stats),
   };
 }
 
@@ -302,7 +304,7 @@ const output = {
   palletes: palettes,
 };
 
-const outPath = join(__dirname, "../src/palettes.json");
+const outPath = join(__dirname, "../../apps/api/src/palettes.json");
 writeFileSync(outPath, JSON.stringify(output, null, 2) + "\n");
 
 console.log(`Wrote ${Object.keys(palettes).length} palettes to ${outPath}`);
@@ -311,15 +313,11 @@ console.log(`Wrote ${Object.keys(palettes).length} palettes to ${outPath}`);
 const styleCounts: Record<string, number> = {};
 const topicCounts: Record<string, number> = {};
 const colorCounts: Record<string, number> = {};
-let autoStyle = 0, autoTopic = 0;
-for (const [id, entry] of Object.entries(palettes)) {
+for (const entry of Object.values(palettes)) {
   styleCounts[entry.style] = (styleCounts[entry.style] || 0) + 1;
   topicCounts[entry.topic] = (topicCounts[entry.topic] || 0) + 1;
   colorCounts[entry.predominantColor] = (colorCounts[entry.predominantColor] || 0) + 1;
-  if (!fileStyle.has(id)) autoStyle++;
-  if (!fileTopic.has(id)) autoTopic++;
 }
-console.log(`\nAuto-detected: ${autoStyle} styles, ${autoTopic} topics`);
 console.log("Colors:", colorCounts);
 console.log("Styles:", styleCounts);
 console.log("Topics:", topicCounts);
