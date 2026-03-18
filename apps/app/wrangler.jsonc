@@ -5,9 +5,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [
-    { "pattern": "illustrations.publingo.com", "custom_domain": true }
-  ],
+//  "routes": [
+//    { "pattern": "illustrations.publingo.com", "custom_domain": true }
+//  ],
   "assets": {
     "directory": "./dist/client"
   },

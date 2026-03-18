@@ -5,12 +5,79 @@ export interface Template {
   height: number
 }
 
-export const TEMPLATES: Template[] = [
-  { id: 'blog-header', name: 'Blog Header', width: 1200, height: 630 },
-  { id: 'social-square', name: 'Social Square', width: 1080, height: 1080 },
-  { id: 'feature', name: 'Feature Image', width: 800, height: 450 },
-  { id: 'thumbnail', name: 'Thumbnail', width: 512, height: 512 },
-]
+// --- Composite template types (JSON-serializable) ---
+
+export interface BackgroundLayerConfig {
+  type: 'background'
+  gradient?: { type: 'linear' | 'radial'; angle: number; colors: string[] }
+}
+
+export interface IllustrationLayerConfig {
+  type: 'illustration'
+  visible?: boolean
+  locked?: boolean
+  left?: number       // fraction of canvas width, default 0.5
+  top?: number        // fraction of canvas height, default 0.5
+  originX?: 'left' | 'center' | 'right'
+  originY?: 'top' | 'center' | 'bottom'
+  fit?: number        // fraction of canvas to fit within, default 0.7
+}
+
+export interface TitleLayerConfig {
+  type: 'title'
+  visible?: boolean
+  locked?: boolean
+  content?: string    // default text (only used on first render)
+  left?: number       // fraction of canvas width, default 0.1
+  top?: number        // fraction of canvas height, default 0.1
+  width?: number      // fraction of canvas width, default 0.4
+  fontSize?: number
+  fontFamily?: string
+  fill?: string
+  fontWeight?: string
+  fontStyle?: string
+  textAlign?: 'left' | 'center' | 'right'
+}
+
+export interface TextLayerConfig {
+  type: 'text'
+  visible?: boolean
+  locked?: boolean
+  name?: string
+  content?: string
+  left?: number       // fraction of canvas width, default 0.1
+  top?: number        // fraction of canvas height, default 0.1
+  width?: number      // fraction of canvas width, default 0.4
+  fontSize?: number
+  fontFamily?: string
+  fill?: string
+  fontWeight?: string
+  fontStyle?: string
+  textAlign?: 'left' | 'center' | 'right'
+}
+
+export type LayerConfig = BackgroundLayerConfig | IllustrationLayerConfig | TitleLayerConfig | TextLayerConfig
+
+export interface CompositeTemplate {
+  id: string
+  name: string
+  width: number
+  height: number
+  layers: LayerConfig[]
+}
+
+// --- Types for saved templates ---
+
+export type TemplateConfig = Omit<CompositeTemplate, 'id' | 'name'>
+
+export interface SavedTemplate extends CompositeTemplate {
+  userId: string
+  projectId: string | null
+  visibility: 'project' | 'personal' | 'public'
+  thumbnail: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 export interface GradientPreset {
   id: string

@@ -126,7 +126,7 @@ generationsRouter.post('/projects/:projectId/generate', async (c) => {
   const {
     prompt, palette: paletteInput, renderings, elements, compositions,
     placements, moods, complexities, layouts, subjects, iconStyles,
-    count, consistent, expand
+    count, consistent, expand, referenceImage, referenceMode,
   } = body as Record<string, unknown>
 
   if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0)
@@ -164,12 +164,19 @@ generationsRouter.post('/projects/:projectId/generate', async (c) => {
     const resolvedSubjects = resolveArrayProp(subjects, 'subject', SUBJECT_KEYWORDS)
     const resolvedIconStyles = resolveArrayProp(iconStyles, 'iconStyle', ICON_STYLE_KEYWORDS)
 
+    // Parse reference image if provided
+    const parsedRef = referenceImage && typeof referenceImage === 'object' && 'base64' in (referenceImage as any) && 'mimeType' in (referenceImage as any)
+      ? { base64: (referenceImage as any).base64 as string, mimeType: (referenceImage as any).mimeType as string }
+      : undefined
+    const parsedRefMode = referenceMode === 'structure' ? 'structure' as const : 'style' as const
+
     function buildPipelineOptions(genId: string) {
       return {
         palette,
         project: projectContext,
         generationId: genId,
         storagePath: `generations/${projectId}/${genId}/`,
+        ...(parsedRef && { referenceImage: parsedRef, referenceMode: parsedRefMode }),
         renderings: resolveForPipeline(resolvedRenderings, RENDERING_KEYWORDS),
         elements: resolveForPipeline(resolvedElements, ELEMENT_KEYWORDS),
         compositions: resolveForPipeline(resolvedCompositions, COMPOSITION_KEYWORDS),

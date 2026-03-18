@@ -64,6 +64,27 @@ export const generations = sqliteTable('generations', {
 ])
 
 // =====================
+// Compose Templates
+// =====================
+
+export const composeTemplates = sqliteTable('compose_templates', {
+  id: text('id').primaryKey().$defaultFn(() => uuidv7()),
+  userId: text('user_id').notNull().references(() => platformUsers.id, { onDelete: 'cascade' }),
+  projectId: text('project_id').references(() => projects.id, { onDelete: 'cascade' }),
+  visibility: text('visibility').notNull().default('personal'),
+  name: text('name').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  layers: text('layers').notNull(),
+  thumbnail: text('thumbnail'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+}, (table) => [
+  index('idx_compose_templates_user_id').on(table.userId),
+  index('idx_compose_templates_project_id').on(table.projectId),
+])
+
+// =====================
 // Platform Users & Auth
 // =====================
 

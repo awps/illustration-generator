@@ -5,9 +5,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "preview_urls": false,
-  "routes": [
-    { "pattern": "illustrations-api.publingo.com", "custom_domain": true }
-  ],
+//  "routes": [
+//    { "pattern": "illustrations-api.publingo.com", "custom_domain": true }
+//  ],
   "vars": {
     "COOKIE_DOMAIN": ".publingo.com",
     "CLOUDFLARE_ACCOUNT_ID": "205c25cc544c6a9b0d96199c6843c172",

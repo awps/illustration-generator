@@ -14,7 +14,7 @@ import {
   type Placement, PLACEMENT_KEYWORDS,
 } from "./styles";
 import { type ResolvedPalette, pickBackgroundColor } from "./palettes";
-import { generateImage, type ReferenceImage } from "./ai/image-generator";
+import { generateImage, type ReferenceImage, type ReferenceMode } from "./ai/image-generator";
 import { buildPublicUrl, uploadToR2 } from "./storage/r2";
 
 export class PipelineError extends Error {
@@ -55,6 +55,7 @@ export interface PipelineOptions {
   palette: ResolvedPalette;
   project?: string;
   referenceImage?: ReferenceImage;
+  referenceMode?: ReferenceMode;
   storagePath: string;
   generationId: string;
   renderings?: Rendering[];
@@ -109,7 +110,7 @@ export async function runPipeline(
   // Step 2: Generate image
   let rawBytes: Buffer;
   try {
-    const image = await generateImage(ai, prompt, options.referenceImage);
+    const image = await generateImage(ai, prompt, options.referenceImage, options.referenceMode);
     rawBytes = Buffer.from(image.base64, "base64");
   } catch (err) {
     if (err instanceof PipelineError) throw err;

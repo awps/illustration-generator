@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { StyleSection } from '@/components/style-section'
 import { PaletteBrowser } from '@/components/palette-browser'
 import { STYLE_OPTIONS, STYLE_LABELS, type StyleCategory } from '@/lib/style-options'
-import { SparklesIcon, PaletteIcon, XIcon } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { SparklesIcon, PaletteIcon, XIcon, ImagePlusIcon } from 'lucide-react'
 
 export interface GenerateRequest {
   prompt: string
@@ -20,6 +21,8 @@ export interface GenerateRequest {
   subjects?: string[]
   iconStyles?: string[]
   placements?: string[]
+  referenceImage?: { base64: string; mimeType: string }
+  referenceMode?: 'style' | 'structure'
 }
 
 interface SelectedPalette {
@@ -69,6 +72,9 @@ export function GeneratorForm({
   const [selections, setSelections] = useState<Record<StyleCategory, string[]>>(saved.selections)
   const [selectedPalette, setSelectedPalette] = useState<SelectedPalette | null>(saved.selectedPalette)
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const [refImage, setRefImage] = useState<{ base64: string; mimeType: string; preview: string } | null>(null)
+  const [refMode, setRefMode] = useState<'style' | 'structure'>('style')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Restore filters when switching projects
   useEffect(() => {
@@ -101,6 +107,37 @@ export function GeneratorForm({
     })
   }
 
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        // Resize to max 768px on longest side
+        const maxSize = 768
+        let w = img.width
+        let h = img.height
+        if (w > maxSize || h > maxSize) {
+          const scale = maxSize / Math.max(w, h)
+          w = Math.round(w * scale)
+          h = Math.round(h * scale)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, w, h)
+        const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1]!
+        setRefImage({ base64, mimeType: 'image/jpeg', preview: canvas.toDataURL('image/jpeg', 0.8) })
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
+    // Reset input so the same file can be re-selected
+    e.target.value = ''
+  }, [])
+
   const handleGenerate = () => {
     if (!prompt.trim()) return
 
@@ -108,6 +145,7 @@ export function GeneratorForm({
       prompt: prompt.trim(),
       count,
       ...(selectedPalette && { palette: selectedPalette.id }),
+      ...(refImage && { referenceImage: { base64: refImage.base64, mimeType: refImage.mimeType }, referenceMode: refMode }),
     }
 
     for (const [key, values] of Object.entries(selections)) {
@@ -135,6 +173,63 @@ export function GeneratorForm({
             className="resize-none text-sm"
           />
           <p className="mt-1 text-right text-[10px] text-muted-foreground">{prompt.length}/500</p>
+        </div>
+
+        {/* Reference image */}
+        <div className="border-b border-sidebar-border p-4">
+          <Label className="mb-2 text-xs font-medium">Reference Image</Label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          {refImage ? (
+            <div className="flex flex-col gap-2">
+              <div className="relative">
+                <img
+                  src={refImage.preview}
+                  alt="Reference"
+                  className="w-full rounded-md border border-border object-contain"
+                  style={{ maxHeight: 120 }}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="absolute right-1 top-1 bg-black/40 text-white hover:bg-black/60"
+                  onClick={() => setRefImage(null)}
+                >
+                  <XIcon className="size-3" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-muted-foreground">
+                  {refMode === 'structure' ? 'Follow layout' : 'Style only'}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <label htmlFor="ref-mode" className="cursor-pointer text-[10px] text-muted-foreground">Structure</label>
+                  <Switch
+                    id="ref-mode"
+                    checked={refMode === 'structure'}
+                    onCheckedChange={(checked) => setRefMode(checked ? 'structure' : 'style')}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full justify-start text-xs text-muted-foreground"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ImagePlusIcon className="size-3" />
+              Upload reference...
+            </Button>
+          )}
         </div>
 
         {/* Style sections */}

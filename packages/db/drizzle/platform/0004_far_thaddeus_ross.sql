@@ -1,0 +1,1 @@
+ALTER TABLE `compose_templates` ADD `visibility` text DEFAULT 'personal' NOT NULL;

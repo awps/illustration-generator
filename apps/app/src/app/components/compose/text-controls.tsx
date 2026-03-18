@@ -1,28 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
+import { Separator } from '@/components/ui/separator'
 import { FONT_FAMILIES } from '@/lib/compose-templates'
-import { PlusIcon, Trash2Icon, BoldIcon, ItalicIcon } from 'lucide-react'
+import { BoldIcon, ItalicIcon, AlignLeftIcon, AlignCenterIcon, AlignRightIcon } from 'lucide-react'
 import type { Textbox as IText } from 'fabric'
 
 export function TextControls({
   selectedText,
-  onAddText,
   onUpdate,
-  onDelete,
 }: {
   selectedText: IText | null
-  onAddText: () => void
   onUpdate: () => void
-  onDelete: () => void
 }) {
   const [fontSize, setFontSize] = useState(48)
   const [fontFamily, setFontFamily] = useState(FONT_FAMILIES[0]!.value)
   const [color, setColor] = useState('#ffffff')
   const [bold, setBold] = useState(true)
   const [italic, setItalic] = useState(false)
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left')
 
   useEffect(() => {
     if (!selectedText) return
@@ -31,6 +27,7 @@ export function TextControls({
     setColor((selectedText.fill as string) ?? '#ffffff')
     setBold(selectedText.fontWeight === 'bold')
     setItalic(selectedText.fontStyle === 'italic')
+    setTextAlign((selectedText.textAlign as 'left' | 'center' | 'right') ?? 'left')
   }, [selectedText])
 
   const apply = (props: Record<string, any>) => {
@@ -39,89 +36,99 @@ export function TextControls({
     onUpdate()
   }
 
+  if (!selectedText) return null
+
   return (
-    <div className="border-b border-sidebar-border p-4">
-      <div className="mb-2 flex items-center justify-between">
-        <Label className="text-xs font-medium">Text</Label>
-        <Button size="icon-xs" variant="outline" onClick={onAddText}>
-          <PlusIcon className="size-3" />
+    <div className="flex items-center gap-2">
+      {/* Font family */}
+      <select
+        value={fontFamily}
+        onChange={(e) => {
+          setFontFamily(e.target.value)
+          apply({ fontFamily: e.target.value })
+        }}
+        className="h-7 w-28 rounded-md border border-input bg-background px-1.5 text-xs"
+      >
+        {FONT_FAMILIES.map((f) => (
+          <option key={f.id} value={f.value}>{f.name}</option>
+        ))}
+      </select>
+
+      <Separator orientation="vertical" className="h-6" />
+
+      {/* Font size */}
+      <Input
+        type="number"
+        value={fontSize}
+        onChange={(e) => {
+          const size = Number(e.target.value) || 48
+          setFontSize(size)
+          apply({ fontSize: size })
+        }}
+        className="h-7 w-14 px-1.5 text-xs"
+        min={8}
+        max={200}
+      />
+
+      <Separator orientation="vertical" className="h-6" />
+
+      {/* Color */}
+      <Input
+        type="color"
+        value={color}
+        onChange={(e) => {
+          setColor(e.target.value)
+          apply({ fill: e.target.value })
+        }}
+        className="h-7 w-8 cursor-pointer p-0.5"
+      />
+
+      <Separator orientation="vertical" className="h-6" />
+
+      {/* Bold / Italic */}
+      <div className="flex items-center gap-0.5">
+        <Button
+          size="icon-xs"
+          variant={bold ? 'default' : 'outline'}
+          onClick={() => {
+            const next = !bold
+            setBold(next)
+            apply({ fontWeight: next ? 'bold' : 'normal' })
+          }}
+        >
+          <BoldIcon className="size-3" />
+        </Button>
+        <Button
+          size="icon-xs"
+          variant={italic ? 'default' : 'outline'}
+          onClick={() => {
+            const next = !italic
+            setItalic(next)
+            apply({ fontStyle: next ? 'italic' : 'normal' })
+          }}
+        >
+          <ItalicIcon className="size-3" />
         </Button>
       </div>
 
-      {selectedText ? (
-        <div className="flex flex-col gap-2">
-          <select
-            value={fontFamily}
-            onChange={(e) => {
-              setFontFamily(e.target.value)
-              apply({ fontFamily: e.target.value })
+      <Separator orientation="vertical" className="h-6" />
+
+      {/* Alignment */}
+      <div className="flex items-center gap-0.5">
+        {([['left', AlignLeftIcon], ['center', AlignCenterIcon], ['right', AlignRightIcon]] as const).map(([align, Icon]) => (
+          <Button
+            key={align}
+            size="icon-xs"
+            variant={textAlign === align ? 'default' : 'outline'}
+            onClick={() => {
+              setTextAlign(align)
+              apply({ textAlign: align })
             }}
-            className="h-7 rounded-md border border-input bg-background px-2 text-xs"
           >
-            {FONT_FAMILIES.map((f) => (
-              <option key={f.id} value={f.value}>{f.name}</option>
-            ))}
-          </select>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-muted-foreground">Size</span>
-              <span className="text-[10px] text-muted-foreground">{fontSize}px</span>
-            </div>
-            <Slider
-              value={[fontSize]}
-              onValueChange={([v]) => {
-                const size = v ?? 48
-                setFontSize(size)
-                apply({ fontSize: size })
-              }}
-              min={12}
-              max={120}
-              step={1}
-              className="mt-1"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Input
-              type="color"
-              value={color}
-              onChange={(e) => {
-                setColor(e.target.value)
-                apply({ fill: e.target.value })
-              }}
-              className="h-7 w-10 cursor-pointer p-0.5"
-            />
-            <Button
-              size="icon-xs"
-              variant={bold ? 'default' : 'outline'}
-              onClick={() => {
-                const next = !bold
-                setBold(next)
-                apply({ fontWeight: next ? 'bold' : 'normal' })
-              }}
-            >
-              <BoldIcon className="size-3" />
-            </Button>
-            <Button
-              size="icon-xs"
-              variant={italic ? 'default' : 'outline'}
-              onClick={() => {
-                const next = !italic
-                setItalic(next)
-                apply({ fontStyle: next ? 'italic' : 'normal' })
-              }}
-            >
-              <ItalicIcon className="size-3" />
-            </Button>
-            <Button size="icon-xs" variant="ghost" onClick={onDelete} className="ml-auto">
-              <Trash2Icon className="size-3" />
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <p className="text-[10px] text-muted-foreground">Click "+" to add text, then select it on canvas to edit.</p>
-      )}
+            <Icon className="size-3" />
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }
