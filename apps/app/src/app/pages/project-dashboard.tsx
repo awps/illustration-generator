@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, type MutableRefObject } from 'react'
-import { useParams } from 'react-router'
+import { useParams, Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Trash2Icon, ImageIcon } from 'lucide-react'
 import { apiFetch, type Generation } from '@/lib/api'
@@ -83,7 +83,7 @@ export function ProjectDashboard({
         const renderings = gen.renderings ? JSON.parse(gen.renderings) as string[] : []
         const imgUrl = `https://${IMAGES_DOMAIN}/${gen.storagePath}transparent.png`
         return (
-          <div key={gen.id} className="group relative overflow-hidden rounded-lg border bg-card">
+          <Link to={`/projects/${projectId}/generations/${gen.id}/compose`} key={gen.id} className="group relative overflow-hidden rounded-lg border bg-card">
             <div className="aspect-square bg-muted/30">
               <img
                 src={imgUrl}
@@ -106,11 +106,15 @@ export function ProjectDashboard({
               variant="ghost"
               size="icon-xs"
               className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => deleteGeneration(gen.id)}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                deleteGeneration(gen.id)
+              }}
             >
               <Trash2Icon className="size-3" />
             </Button>
-          </div>
+          </Link>
         )
       })}
     </div>

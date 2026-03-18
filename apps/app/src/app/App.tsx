@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage } from '@/components/ui/breadcrumb'
 import { SidebarLeft } from '@/components/sidebar-left'
 import { ProjectDashboard } from '@/pages/project-dashboard'
+import { ComposePage } from '@/pages/compose'
 import { NoProject } from '@/pages/no-project'
 import { apiFetch, type User, type Project, type Generation } from '@/lib/api'
 import type { GenerateRequest } from '@/components/generator-form'
@@ -135,7 +136,8 @@ export function App() {
 
   return (
     <Routes>
-      <Route path="/projects/:projectId/*" element={
+      <Route path="/projects/:projectId/generations/:generationId/compose" element={<ComposePage />} />
+      <Route path="/projects/:projectId" element={
         <ProjectLayout user={user} projects={projects} onProjectCreated={loadProjects} />
       } />
       <Route path="*" element={<Navigate to={`/projects/${projects[0]!.id}`} replace />} />
