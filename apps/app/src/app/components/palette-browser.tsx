@@ -88,16 +88,12 @@ export function PaletteBrowser({
     }
   }, [open, filters, fetchFilters])
 
-  // Load palettes on open
+  // Load palettes on open and when filters change
   useEffect(() => {
     if (open) {
       fetchPalettes(true, 0)
     }
-  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const applyFilters = () => {
-    fetchPalettes(true, 0)
-  }
+  }, [open, color, style, topic, totalColors]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleScroll = () => {
     const el = scrollRef.current
@@ -113,7 +109,7 @@ export function PaletteBrowser({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex h-[80vh] max-w-4xl flex-col gap-0 p-0">
+      <DialogContent className="flex h-[90vh] max-w-6xl flex-col gap-0 p-0">
         <DialogHeader className="shrink-0 border-b px-4 py-3">
           <DialogTitle>Choose a Palette</DialogTitle>
         </DialogHeader>
@@ -136,7 +132,6 @@ export function PaletteBrowser({
             <option value="">Any Count</option>
             {filters?.totalColors.map(v => <option key={v} value={String(v)}>{v} colors</option>)}
           </select>
-          <Button size="xs" variant="outline" onClick={applyFilters}>Filter</Button>
           {selectedId && (
             <Button size="xs" variant="ghost" onClick={() => onSelect(null)} className="ml-auto text-muted-foreground">
               <XIcon className="size-3" />
@@ -147,7 +142,7 @@ export function PaletteBrowser({
 
         {/* Grid */}
         <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4">
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {palettes.map((p) => {
               const colors = parseColors(p.colors)
               const isSelected = p.id === selectedId
