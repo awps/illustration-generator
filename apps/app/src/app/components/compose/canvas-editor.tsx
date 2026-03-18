@@ -108,6 +108,8 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       const bg = new Rect({
         left: 0,
         top: 0,
+        originX: 'left',
+        originY: 'top',
         width: initialWidth,
         height: initialHeight,
         selectable: false,
