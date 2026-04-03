@@ -11,9 +11,11 @@
     "test": "npm run test --workspaces --if-present",
     "test:run": "npm run test:run --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:migrate:remote": "npm run db:migrate:remote -w @illustragen/api",
     "deploy": "npm run deploy -w @illustragen/api && npm run deploy -w @illustragen/app",
     "docker": "docker compose --env-file .env.tpl down && docker compose --env-file .env.tpl up --build",
     "docker:reset-db": "docker compose --env-file .env.tpl down && rm -rf .local-data/v3 && docker compose --env-file .env.tpl up --build",
     "docker:trust-ca": "docker compose --env-file .env.tpl cp caddy:/data/caddy/pki/authorities/local/root.crt docker/caddy-root-ca.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain docker/caddy-root-ca.crt && echo 'Caddy root CA trusted'"
-  }
+  },
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
 }

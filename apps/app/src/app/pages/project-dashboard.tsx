@@ -1,12 +1,10 @@
 import { useEffect, useState, useCallback, type MutableRefObject } from 'react'
-import { useParams, Link } from 'react-router'
-import { Button } from '@/components/ui/button'
-import { Trash2Icon, ImageIcon } from 'lucide-react'
+import { useParams } from 'react-router'
+import { ImageIcon } from 'lucide-react'
 import { apiFetch, type Generation } from '@/lib/api'
 import { GenerationPlaceholder } from '@/components/generation-placeholder'
+import { GenerationCard } from '@/components/generation-card'
 import type { PendingGeneration } from '@/App'
-
-const IMAGES_DOMAIN = (window as any).__CONFIG__?.imagesDomain ?? 'imagen.publingo.com'
 
 export function ProjectDashboard({
   pendingGenerations,
@@ -79,44 +77,13 @@ export function ProjectDashboard({
         <GenerationPlaceholder key={p.id} prompt={p.prompt} error={p.error} />
       ))}
 
-      {generations.map((gen) => {
-        const renderings = gen.renderings ? JSON.parse(gen.renderings) as string[] : []
-        const imgUrl = `https://${IMAGES_DOMAIN}/${gen.storagePath}transparent.png`
-        return (
-          <Link to={`/projects/${projectId}/generations/${gen.id}/compose`} key={gen.id} className="group relative overflow-hidden rounded-lg border bg-card">
-            <div className="aspect-square bg-muted/30">
-              <img
-                src={imgUrl}
-                alt={gen.prompt}
-                className="size-full object-contain p-2"
-                loading="lazy"
-              />
-            </div>
-            <div className="p-2">
-              <p className="truncate text-xs font-medium">{gen.prompt}</p>
-              <div className="mt-1 flex items-center gap-1">
-                {renderings.map((r) => (
-                  <span key={r} className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                    {r}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                deleteGeneration(gen.id)
-              }}
-            >
-              <Trash2Icon className="size-3" />
-            </Button>
-          </Link>
-        )
-      })}
+      {generations.map((gen) => (
+        <GenerationCard
+          key={gen.id}
+          generation={gen}
+          onDelete={deleteGeneration}
+        />
+      ))}
     </div>
   )
 }

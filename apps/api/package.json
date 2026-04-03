@@ -9,6 +9,7 @@
     "test:run": "vitest run",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
+    "db:migrate:remote": "wrangler d1 migrations apply illustragen-platform --remote",
     "deploy": "wrangler deploy"
   },
   "dependencies": {

@@ -25,6 +25,13 @@ export interface Generation {
   renderings: string | null
   elements: string | null
   compositions: string | null
+  placements: string | null
+  moods: string | null
+  complexities: string | null
+  layouts: string | null
+  subjects: string | null
+  iconStyles: string | null
   storagePath: string
+  paletteColors: string[] | null
   createdAt: string
 }

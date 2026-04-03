@@ -15,7 +15,7 @@
     "IMAGES_DOMAIN": "imagen.publingo.com"
   },
   "d1_databases": [
-    { "binding": "PLATFORM_DB", "database_name": "illustragen-platform", "database_id": "a198c8f6-bdc5-4c3e-bedb-1afb8bb59f48" }
+    { "binding": "PLATFORM_DB", "database_name": "illustragen-platform", "database_id": "a198c8f6-bdc5-4c3e-bedb-1afb8bb59f48", "migrations_dir": "../../packages/db/drizzle/platform" }
   ],
   "r2_buckets": [
     { "binding": "IMAGES_BUCKET", "bucket_name": "illustrations-generator" }

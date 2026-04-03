@@ -1,9 +1,11 @@
 import { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
-import { Canvas, Rect, FabricImage, Gradient, Textbox, FabricObject } from 'fabric'
+import { Canvas, Rect, FabricImage, Gradient, Textbox, FabricObject, BaseFabricObject } from 'fabric'
 import { type Layer, buildLayersFromCanvas } from '@/lib/layer-types'
-import type { CompositeTemplate, IllustrationLayerConfig, TitleLayerConfig, TextLayerConfig, TemplateConfig, LayerConfig } from '@/lib/compose-templates'
+import type { CompositeTemplate, IllustrationLayerConfig, TitleLayerConfig, TextLayerConfig, ImageLayerConfig, TemplateConfig, LayerConfig } from '@/lib/compose-templates'
 
 FabricObject.customProperties = ['layerId', 'layerType', 'layerName']
+BaseFabricObject.ownDefaults.originX = 'center'
+BaseFabricObject.ownDefaults.originY = 'center'
 
 export interface CanvasEditorHandle {
   canvas: Canvas | null
@@ -11,6 +13,8 @@ export interface CanvasEditorHandle {
   applyTemplate: (config: CompositeTemplate, options?: { keepGradient?: boolean }) => void
   setGradient: (type: 'linear' | 'radial', angle: number, colors: string[]) => void
   addText: () => string | undefined
+  addImage: (dataUrl: string) => string | undefined
+  setLayerOpacity: (layerId: string, opacity: number) => void
   exportPNG: () => string | null
   setLayerVisibility: (layerId: string, visible: boolean) => void
   setLayerLocked: (layerId: string, locked: boolean) => void
@@ -97,9 +101,6 @@ function extractGradientState(gradient: Gradient<'linear' | 'radial'>): Gradient
   return { type: 'linear', angle: ((angle % 360) + 360) % 360, colors }
 }
 
-// Bleed: oversized bg rect to avoid 1px edge artifacts on export
-const BG_BLEED = 2
-
 export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
   ({ imageUrl, initialWidth, initialHeight, initialTitle, onSelectionChange, onLayersChange, onGradientApplied, onHistoryChange }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -148,8 +149,6 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         scaleY: scale,
         left: w / 2,
         top: h / 2,
-        originX: 'center',
-        originY: 'center',
       })
       canvas.renderAll()
     }, [])
@@ -165,8 +164,6 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         scaleY: scale,
         left: w * (cfg.left ?? 0.5),
         top: h * (cfg.top ?? 0.5),
-        originX: cfg.originX ?? 'center',
-        originY: cfg.originY ?? 'center',
       })
     }, [])
 
@@ -213,7 +210,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       const bg = bgRef.current
       if (bg) {
         bg.set({ selectable: false, evented: false })
-        sizeRef.current = { width: (bg.width ?? initialWidth) - BG_BLEED * 2, height: (bg.height ?? initialHeight) - BG_BLEED * 2 }
+        sizeRef.current = { width: bg.width ?? initialWidth, height: bg.height ?? initialHeight }
         const fill = bg.fill
         if (fill instanceof Gradient) {
           gradientRef.current = extractGradientState(fill)
@@ -243,14 +240,13 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
       // Background rect — fill entire canvas
       const bgLayerId = crypto.randomUUID()
       const bg = new Rect({
-        left: -BG_BLEED,
-        top: -BG_BLEED,
-        originX: 'left',
-        originY: 'top',
-        width: initialWidth + BG_BLEED * 2,
-        height: initialHeight + BG_BLEED * 2,
-        selectable: true,
-        evented: true,
+        left: initialWidth / 2,
+        top: initialHeight / 2,
+        width: initialWidth,
+        height: initialHeight,
+        strokeWidth: 0,
+        selectable: false,
+        evented: false,
       })
       bg.layerId = bgLayerId
       bg.layerType = 'background'
@@ -297,8 +293,6 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         fontWeight: 'bold',
         splitByGrapheme: false,
         textAlign: 'left',
-        originX: 'center',
-        originY: 'center',
       })
       title.layerId = titleLayerId
       title.layerType = 'title'
@@ -394,7 +388,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         sizeRef.current = { width, height }
 
         // Resize background (with bleed)
-        bg.set({ left: -BG_BLEED, top: -BG_BLEED, width: width + BG_BLEED * 2, height: height + BG_BLEED * 2 })
+        bg.set({ left: width / 2, top: height / 2, width, height, strokeWidth: 0 })
         applyGradient(bg, gradientRef.current)
 
         // Re-center and scale illustration to fit new dimensions
@@ -430,12 +424,12 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
 
         // Remove disposable text layers (keep title)
         canvas.discardActiveObject()
-        const textObjects = canvas.getObjects().filter((o) => o.layerType === 'text')
+        const textObjects = canvas.getObjects().filter((o) => o.layerType === 'text' || o.layerType === 'image')
         for (const obj of textObjects) canvas.remove(obj)
         textCountRef.current = 0
 
-        // Resize background
-        bg.set({ width, height })
+        // Resize background (with bleed)
+        bg.set({ left: width / 2, top: height / 2, width, height, strokeWidth: 0 })
 
         // Apply gradient from template (or keep current)
         if (!options?.keepGradient) {
@@ -455,6 +449,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
           img.visible = illConfig.visible ?? true
           img.selectable = !(illConfig.locked ?? false)
           img.evented = !(illConfig.locked ?? false)
+          img.opacity = illConfig.opacity ?? 1
           canvas.moveObjectTo(img, 1)
         } else if (img) {
           centerIllustration(canvas, img, width, height)
@@ -471,6 +466,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
           titleObj.visible = titleConfig.visible ?? true
           titleObj.selectable = !(titleConfig.locked ?? false)
           titleObj.evented = !(titleConfig.locked ?? false)
+          titleObj.opacity = titleConfig.opacity ?? 1
         } else if (titleObj) {
           // No title config — recenter with defaults
           titleObj.set({
@@ -505,7 +501,34 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
           textbox.visible = tc.visible ?? true
           textbox.selectable = !(tc.locked ?? false)
           textbox.evented = !(tc.locked ?? false)
+          textbox.opacity = tc.opacity ?? 1
           canvas.add(textbox)
+        }
+
+        // Create image layers from config
+        for (const layerCfg of config.layers) {
+          if (layerCfg.type !== 'image') continue
+          const ic = layerCfg as ImageLayerConfig
+          if (!ic.src) continue
+          const imgLayerId = crypto.randomUUID()
+          FabricImage.fromURL(ic.src).then((img) => {
+            img.set({
+              left: width * (ic.left ?? 0.5),
+              top: height * (ic.top ?? 0.5),
+              scaleX: ic.scaleX ?? 1,
+              scaleY: ic.scaleY ?? 1,
+              opacity: ic.opacity ?? 1,
+              visible: ic.visible ?? true,
+              selectable: !(ic.locked ?? false),
+              evented: !(ic.locked ?? false),
+            })
+            img.layerId = imgLayerId
+            img.layerType = 'image'
+            img.layerName = ic.name ?? 'Image'
+            canvas.add(img)
+            canvas.renderAll()
+            fireLayers()
+          })
         }
 
         canvas.setDimensions({ width, height })
@@ -552,6 +575,36 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         return layerId
       },
 
+      addImage(dataUrl: string) {
+        const canvas = fabricRef.current
+        if (!canvas) return undefined
+        const { width, height } = sizeRef.current
+        const layerId = crypto.randomUUID()
+        FabricImage.fromURL(dataUrl).then((img) => {
+          // Scale to fit 50% of canvas
+          const scale = Math.min(
+            (width * 0.5) / img.getOriginalSize().width,
+            (height * 0.5) / img.getOriginalSize().height,
+            1,
+          )
+          img.set({
+            scaleX: scale,
+            scaleY: scale,
+            left: width / 2,
+            top: height / 2,
+          })
+          img.layerId = layerId
+          img.layerType = 'image'
+          img.layerName = 'Image'
+          canvas.add(img)
+          canvas.setActiveObject(img)
+          canvas.renderAll()
+          fireLayers()
+          takeSnapshot()
+        })
+        return layerId
+      },
+
       setLayerVisibility(layerId: string, visible: boolean) {
         const obj = findObjectByLayerId(layerId)
         const canvas = fabricRef.current
@@ -579,6 +632,15 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         takeSnapshot()
       },
 
+      setLayerOpacity(layerId: string, opacity: number) {
+        const obj = findObjectByLayerId(layerId)
+        const canvas = fabricRef.current
+        if (!obj || !canvas) return
+        obj.set({ opacity })
+        canvas.renderAll()
+        takeSnapshot()
+      },
+
       moveLayer(layerId: string, direction: 'up' | 'down') {
         const canvas = fabricRef.current
         if (!canvas) return
@@ -603,7 +665,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
         const canvas = fabricRef.current
         if (!canvas) return
         const obj = findObjectByLayerId(layerId)
-        if (!obj || obj.layerType !== 'text') return
+        if (!obj || (obj.layerType !== 'text' && obj.layerType !== 'image')) return
         if (canvas.getActiveObject() === obj) {
           canvas.discardActiveObject()
         }
@@ -657,9 +719,8 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
             locked: !(img.selectable ?? true),
             left: (img.left ?? 0) / width,
             top: (img.top ?? 0) / height,
-            originX: (img.originX as 'left' | 'center' | 'right') ?? 'center',
-            originY: (img.originY as 'top' | 'center' | 'bottom') ?? 'center',
             fit,
+            opacity: img.opacity ?? 1,
           })
         }
 
@@ -679,6 +740,7 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
             fill: title.fill as string | undefined,
             fontWeight: title.fontWeight as string | undefined,
             textAlign: (title.textAlign as 'left' | 'center' | 'right') ?? 'left',
+            opacity: title.opacity ?? 1,
           })
         }
 
@@ -702,6 +764,27 @@ export const CanvasEditor = forwardRef<CanvasEditorHandle, CanvasEditorProps>(
               fill: tb.fill as string | undefined,
               fontWeight: tb.fontWeight as string | undefined,
               textAlign: (tb.textAlign as 'left' | 'center' | 'right') ?? 'left',
+              opacity: tb.opacity ?? 1,
+            })
+          }
+        }
+
+        // Image layers
+        if (canvas) {
+          for (const obj of canvas.getObjects()) {
+            if (obj.layerType !== 'image') continue
+            const fi = obj as FabricImage
+            layers.push({
+              type: 'image',
+              visible: fi.visible ?? true,
+              locked: !(fi.selectable ?? true),
+              opacity: fi.opacity ?? 1,
+              name: obj.layerName,
+              src: fi.getSrc(),
+              left: (fi.left ?? 0) / width,
+              top: (fi.top ?? 0) / height,
+              scaleX: fi.scaleX ?? 1,
+              scaleY: fi.scaleY ?? 1,
             })
           }
         }

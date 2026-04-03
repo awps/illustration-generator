@@ -7,6 +7,7 @@ import { generationsRouter } from './routes/generations'
 import { palettesRouter } from './routes/palettes'
 import { user } from './routes/user'
 import { composeTemplatesRouter } from './routes/compose-templates'
+import { preferencesRouter } from './routes/preferences'
 
 const app = new Hono<Env>()
 
@@ -22,5 +23,6 @@ app.route('/v1', generationsRouter)
 app.route('/v1/palettes', palettesRouter)
 app.route('/v1/user', user)
 app.route('/v1/compose-templates', composeTemplatesRouter)
+app.route('/v1', preferencesRouter)
 
 export default app

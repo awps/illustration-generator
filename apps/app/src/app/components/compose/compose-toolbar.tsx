@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { Slider } from '@/components/ui/slider'
 import { GradientControls } from '@/components/compose/gradient-controls'
 import { TextControls } from '@/components/compose/text-controls'
 import {
@@ -36,6 +37,8 @@ interface ComposeToolbarProps {
   onGradientChange: (type: 'linear' | 'radial', angle: number, colors: string[]) => void
   selectedText: IText | null
   onTextUpdate: () => void
+  activeLayerOpacity: number
+  onOpacityChange: (opacity: number) => void
 }
 
 const ALIGN_BUTTONS: { alignment: Alignment; icon: typeof AlignHorizontalJustifyStartIcon; title: string }[] = [
@@ -63,6 +66,8 @@ export function ComposeToolbar({
   onGradientChange,
   selectedText,
   onTextUpdate,
+  activeLayerOpacity,
+  onOpacityChange,
 }: ComposeToolbarProps) {
   const showAlign = activeLayerType && activeLayerType !== 'background'
   const [w, setW] = useState(String(canvasWidth))
@@ -117,6 +122,20 @@ export function ComposeToolbar({
                   <Icon className="size-3.5" />
                 </Button>
               ))}
+            </div>
+
+            <Separator orientation="vertical" className="mx-1.5 h-5" />
+
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground">{Math.round(activeLayerOpacity * 100)}%</span>
+              <Slider
+                value={[activeLayerOpacity * 100]}
+                onValueChange={([v]) => onOpacityChange((v ?? 100) / 100)}
+                min={0}
+                max={100}
+                step={1}
+                className="w-16"
+              />
             </div>
           </>
         )}

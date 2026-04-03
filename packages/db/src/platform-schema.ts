@@ -85,6 +85,20 @@ export const composeTemplates = sqliteTable('compose_templates', {
 ])
 
 // =====================
+// User–Project Preferences (EAV)
+// =====================
+
+export const userProjectPreferences = sqliteTable('user_project_preferences', {
+  userId: text('user_id').notNull().references(() => platformUsers.id, { onDelete: 'cascade' }),
+  projectId: text('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  key: text('key').notNull(),
+  value: text('value').notNull(),
+}, (table) => [
+  index('idx_upp_user_project').on(table.userId, table.projectId),
+  index('idx_upp_user_project_key').on(table.userId, table.projectId, table.key),
+])
+
+// =====================
 // Platform Users & Auth
 // =====================
 

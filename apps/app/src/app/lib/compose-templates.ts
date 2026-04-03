@@ -16,10 +16,9 @@ export interface IllustrationLayerConfig {
   type: 'illustration'
   visible?: boolean
   locked?: boolean
+  opacity?: number
   left?: number       // fraction of canvas width, default 0.5
   top?: number        // fraction of canvas height, default 0.5
-  originX?: 'left' | 'center' | 'right'
-  originY?: 'top' | 'center' | 'bottom'
   fit?: number        // fraction of canvas to fit within, default 0.7
 }
 
@@ -27,6 +26,7 @@ export interface TitleLayerConfig {
   type: 'title'
   visible?: boolean
   locked?: boolean
+  opacity?: number
   content?: string    // default text (only used on first render)
   left?: number       // fraction of canvas width, default 0.1
   top?: number        // fraction of canvas height, default 0.1
@@ -43,6 +43,7 @@ export interface TextLayerConfig {
   type: 'text'
   visible?: boolean
   locked?: boolean
+  opacity?: number
   name?: string
   content?: string
   left?: number       // fraction of canvas width, default 0.1
@@ -56,7 +57,20 @@ export interface TextLayerConfig {
   textAlign?: 'left' | 'center' | 'right'
 }
 
-export type LayerConfig = BackgroundLayerConfig | IllustrationLayerConfig | TitleLayerConfig | TextLayerConfig
+export interface ImageLayerConfig {
+  type: 'image'
+  visible?: boolean
+  locked?: boolean
+  opacity?: number
+  name?: string
+  src?: string        // data URL or R2 URL
+  left?: number       // fraction of canvas width
+  top?: number        // fraction of canvas height
+  scaleX?: number
+  scaleY?: number
+}
+
+export type LayerConfig = BackgroundLayerConfig | IllustrationLayerConfig | TitleLayerConfig | TextLayerConfig | ImageLayerConfig
 
 export interface CompositeTemplate {
   id: string

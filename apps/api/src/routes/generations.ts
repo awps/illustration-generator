@@ -1,8 +1,9 @@
 import { Hono } from 'hono'
 import { drizzle } from 'drizzle-orm/d1'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and, desc, lt } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
-import { generations, projects } from '@illustragen/db/platform'
+import { generations, projects, palettes } from '@illustragen/db/platform'
+import { inArray } from 'drizzle-orm'
 import type { Env } from '../types'
 import {
   RENDERING_KEYWORDS, ELEMENT_KEYWORDS, COMPOSITION_KEYWORDS,
@@ -11,6 +12,16 @@ import {
 } from '../styles'
 import { resolvePalette } from '../palettes'
 import { runPipeline, PipelineError } from '../pipeline'
+
+type DbClient = ReturnType<typeof drizzle>
+
+async function enrichWithPalettes(db: DbClient, gens: typeof generations.$inferSelect[]) {
+  const paletteIds = [...new Set(gens.map((g) => g.paletteId).filter(Boolean))] as string[]
+  if (paletteIds.length === 0) return gens.map((g) => ({ ...g, paletteColors: null as string[] | null }))
+  const paletteRows = await db.select({ id: palettes.id, colors: palettes.colors }).from(palettes).where(inArray(palettes.id, paletteIds))
+  const colorMap = new Map(paletteRows.map((p) => [p.id, JSON.parse(p.colors) as string[]]))
+  return gens.map((g) => ({ ...g, paletteColors: (g.paletteId ? colorMap.get(g.paletteId) : null) ?? null }))
+}
 
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!
@@ -68,6 +79,26 @@ function cartesianProduct(
 const generationsRouter = new Hono<Env>()
 
 // List generations for a project
+// All generations across all users (authenticated)
+generationsRouter.get('/generations', async (c) => {
+  const db = drizzle(c.env.PLATFORM_DB)
+  const cursor = c.req.query('cursor')
+  const limit = Math.min(Number(c.req.query('limit')) || 30, 50)
+
+  const where = cursor ? lt(generations.id, cursor) : undefined
+
+  const rows = await db.select().from(generations)
+    .where(where)
+    .orderBy(desc(generations.id))
+    .limit(limit + 1)
+
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
+  const nextCursor = hasMore ? page[page.length - 1]!.id : null
+
+  return c.json({ generations: await enrichWithPalettes(db, page), nextCursor })
+})
+
 generationsRouter.get('/projects/:projectId/generations', async (c) => {
   const db = drizzle(c.env.PLATFORM_DB)
   const projectId = c.req.param('projectId')
@@ -87,7 +118,18 @@ generationsRouter.get('/projects/:projectId/generations', async (c) => {
     .where(eq(generations.projectId, projectId))
     .orderBy(desc(generations.createdAt))
 
-  return c.json({ generations: results })
+  return c.json({ generations: await enrichWithPalettes(db, results) })
+})
+
+// Get single generation (any user can view)
+generationsRouter.get('/generations/:id', async (c) => {
+  const db = drizzle(c.env.PLATFORM_DB)
+  const [gen] = await db.select().from(generations)
+    .where(eq(generations.id, c.req.param('id')))
+    .limit(1)
+  if (!gen) return c.json({ error: 'not_found', message: 'Generation not found' }, 404)
+  const [enriched] = await enrichWithPalettes(db, [gen])
+  return c.json({ generation: enriched })
 })
 
 // Delete a generation

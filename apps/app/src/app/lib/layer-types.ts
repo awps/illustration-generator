@@ -1,6 +1,6 @@
 import type { FabricObject } from 'fabric'
 
-export type LayerType = 'background' | 'illustration' | 'title' | 'text'
+export type LayerType = 'background' | 'illustration' | 'title' | 'text' | 'image'
 
 export interface Layer {
   id: string

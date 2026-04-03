@@ -18,6 +18,7 @@ import {
   PencilIcon,
   CheckIcon,
   PlusIcon,
+  ImagePlusIcon,
 } from 'lucide-react'
 
 const TYPE_ICONS: Record<Layer['type'], typeof ImageIcon> = {
@@ -25,6 +26,7 @@ const TYPE_ICONS: Record<Layer['type'], typeof ImageIcon> = {
   illustration: ImageIcon,
   title: HeadingIcon,
   text: TypeIcon,
+  image: ImagePlusIcon,
 }
 
 interface LayerPanelProps {
@@ -37,7 +39,7 @@ interface LayerPanelProps {
   onMoveDown: (layerId: string) => void
   onDelete: (layerId: string) => void
   onRename: (layerId: string, name: string) => void
-  onAddElement?: (type: 'text') => void
+  onAddElement?: (type: 'text' | 'image') => void
 }
 
 export function LayerPanel({
@@ -91,6 +93,16 @@ export function LayerPanel({
               >
                 <TypeIcon className="size-3" /> Text
               </button>
+              <button
+                type="button"
+                className="flex items-center gap-1.5 rounded px-2 py-1 text-xs hover:bg-muted"
+                onClick={() => {
+                  onAddElement?.('image')
+                  setAddMenuOpen(false)
+                }}
+              >
+                <ImagePlusIcon className="size-3" /> Image
+              </button>
             </div>
           )}
         </div>
@@ -100,8 +112,8 @@ export function LayerPanel({
           const Icon = TYPE_ICONS[layer.type]
           const isActive = layer.id === activeLayerId
           const isBackground = layer.type === 'background'
-          const isDeletable = layer.type === 'text'
-          const isRenamable = layer.type === 'text' || layer.type === 'title'
+          const isDeletable = layer.type === 'text' || layer.type === 'image'
+          const isRenamable = layer.type === 'text' || layer.type === 'title' || layer.type === 'image'
           const isEditing = editingId === layer.id
 
           return (

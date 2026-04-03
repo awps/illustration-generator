@@ -17,7 +17,7 @@ import {
   type TemplateConfig,
 } from '@/lib/compose-templates'
 import { apiFetch } from '@/lib/api'
-import { SaveIcon, Trash2Icon, PencilIcon, CheckIcon, MoreHorizontalIcon } from 'lucide-react'
+import { SaveIcon, Trash2Icon, PencilIcon, CheckIcon, MoreHorizontalIcon, StarIcon } from 'lucide-react'
 
 type Visibility = 'project' | 'personal' | 'public'
 
@@ -88,9 +88,20 @@ export function TemplatePicker({ activeId, projectId, keepStyle, onKeepStyleChan
   const [saveName, setSaveName] = useState('')
   const [saveVisibility, setSaveVisibility] = useState<Visibility>('personal')
   const [savePending, setSavePending] = useState(false)
+  const [defaultTemplateId, setDefaultTemplateId] = useState<string | null>(null)
+  const defaultAppliedRef = useRef(false)
 
   const sentinelRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+
+  // Fetch default template preference
+  useEffect(() => {
+    if (!projectId) return
+    apiFetch(`/v1/projects/${projectId}/preferences/defaultTemplateId`)
+      .then((r) => r.json())
+      .then((data) => setDefaultTemplateId(data.value ?? null))
+      .catch(() => {})
+  }, [projectId])
 
   // Fetch templates for current tab
   const fetchTemplates = useCallback(async (cursor?: string) => {
@@ -114,6 +125,16 @@ export function TemplatePicker({ activeId, projectId, keepStyle, onKeepStyleChan
     setNextCursor(null)
     fetchTemplates()
   }, [fetchTemplates])
+
+  // Auto-apply default template once on first load
+  useEffect(() => {
+    if (defaultAppliedRef.current || !defaultTemplateId || templates.length === 0) return
+    const defaultTemplate = templates.find((t) => t.id === defaultTemplateId)
+    if (defaultTemplate) {
+      defaultAppliedRef.current = true
+      onSelect(defaultTemplate)
+    }
+  }, [defaultTemplateId, templates, onSelect])
 
   // Infinite scroll via IntersectionObserver
   useEffect(() => {
@@ -159,6 +180,23 @@ export function TemplatePicker({ activeId, projectId, keepStyle, onKeepStyleChan
     setSaveOpen(false)
     setSaveName('')
   }, [saveName, saveVisibility, savePending, projectId, tab, onGetTemplateConfig, onGetThumbnail])
+
+  const handleSetDefault = useCallback(async (id: string) => {
+    if (!projectId) return
+    const isUnset = defaultTemplateId === id
+    if (isUnset) {
+      await apiFetch(`/v1/projects/${projectId}/preferences/defaultTemplateId`, { method: 'DELETE' })
+      setDefaultTemplateId(null)
+    } else {
+      await apiFetch(`/v1/projects/${projectId}/preferences/defaultTemplateId`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: id }),
+      })
+      setDefaultTemplateId(id)
+    }
+    setMenuOpenId(null)
+  }, [projectId, defaultTemplateId])
 
   const handleDelete = useCallback(async (id: string) => {
     const res = await apiFetch(`/v1/compose-templates/${id}`, { method: 'DELETE' })
@@ -242,6 +280,11 @@ export function TemplatePicker({ activeId, projectId, keepStyle, onKeepStyleChan
                       isActive={activeId === t.id}
                       onClick={() => onSelect(t)}
                     />
+                    {defaultTemplateId === t.id && (
+                      <span className="absolute left-2 top-2 rounded bg-yellow-500/80 px-1 py-0.5 text-[8px] font-medium text-black backdrop-blur-sm">
+                        Default
+                      </span>
+                    )}
                     <div className="absolute right-2 top-2">
                       <Button
                         size="icon-xs"
@@ -256,6 +299,14 @@ export function TemplatePicker({ activeId, projectId, keepStyle, onKeepStyleChan
                       </Button>
                       {menuOpenId === t.id && (
                         <div className="absolute right-0 top-6 z-10 flex flex-col rounded-md border bg-popover p-1 shadow-md">
+                          <button
+                            type="button"
+                            className="flex items-center gap-1.5 rounded px-2 py-1 text-xs hover:bg-muted"
+                            onClick={() => handleSetDefault(t.id)}
+                          >
+                            <StarIcon className={`size-3 ${defaultTemplateId === t.id ? 'fill-current' : ''}`} />
+                            {defaultTemplateId === t.id ? 'Unset default' : 'Set as default'}
+                          </button>
                           <button
                             type="button"
                             className="flex items-center gap-1.5 rounded px-2 py-1 text-xs hover:bg-muted"

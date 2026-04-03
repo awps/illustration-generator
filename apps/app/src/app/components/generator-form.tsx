@@ -84,6 +84,28 @@ export function GeneratorForm({
     setCount(s.count)
   }, [projectId])
 
+  // Pick up prefill from "Use config" on generation card
+  useEffect(() => {
+    const applyPrefill = () => {
+      const raw = sessionStorage.getItem('gen-prefill')
+      if (!raw) return
+      sessionStorage.removeItem('gen-prefill')
+      try {
+        const config = JSON.parse(raw) as Record<string, any>
+        if (config.prompt) setPrompt(config.prompt)
+        const newSelections = { ...emptySelections }
+        for (const key of Object.keys(emptySelections) as StyleCategory[]) {
+          if (Array.isArray(config[key])) newSelections[key] = config[key]
+        }
+        setSelections(newSelections)
+        if (config.paletteId) setSelectedPalette({ id: config.paletteId, colors: config.paletteColors ?? [] })
+      } catch { /* ignore */ }
+    }
+    applyPrefill()
+    window.addEventListener('gen-prefill', applyPrefill)
+    return () => window.removeEventListener('gen-prefill', applyPrefill)
+  }, [projectId])
+
   // Persist filters on change
   const saveFilters = useCallback(() => {
     if (!projectId) return
